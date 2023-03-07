@@ -74,9 +74,9 @@ export class Record extends Realm.Object {
 }
 
 const config = {
-  // path: 'realmData/data.realm',
+  path: 'realmData',
   schemaVersion: 1,
-  // deleteRealmIfMigrationNeeded: true, //debug
+  deleteRealmIfMigrationNeeded: true, //debug
   schema: [Student, Record],
 }
 
