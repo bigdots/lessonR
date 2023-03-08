@@ -51,7 +51,7 @@ function StudentPatchAddModal(props: any) {
           `name == '${fields.name}'`
         )
 
-        if (exists.length) {
+        if (exists && exists.length) {
           message.warning('已存在该学生')
           return
         }

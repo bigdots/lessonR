@@ -1,7 +1,9 @@
 import { app, BrowserWindow, shell, ipcMain } from 'electron'
 import { release } from 'node:os'
-import { join } from 'node:path'
-
+// import { join } from 'node:path'
+const path = require('path')
+const fs = require('fs')
+const { join } = path
 // The built directory structure
 //
 // ├─┬ dist-electron
@@ -54,7 +56,8 @@ async function createWindow() {
     },
   })
 
-  if (process.env.VITE_DEV_SERVER_URL) { // electron-vite-vue#298
+  if (process.env.VITE_DEV_SERVER_URL) {
+    // electron-vite-vue#298
     win.loadURL(url)
     // Open devTool if the app is not packaged
     win.webContents.openDevTools()
@@ -113,4 +116,13 @@ ipcMain.handle('open-win', (_, arg) => {
   } else {
     childWindow.loadFile(indexHtml, { hash: arg })
   }
+})
+
+ipcMain.handle('get-path', (event, dbfilename) => {
+  const dirPath = path.join(app.getPath('userData'), 'db')
+  if (!fs.existsSync(dirPath)) {
+    fs.mkdirSync(dirPath, { recursive: true })
+  }
+  const dbPath = path.join(dirPath, dbfilename)
+  return dbPath
 })

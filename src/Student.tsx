@@ -20,20 +20,15 @@ import dayjs from 'dayjs'
 const { Column } = Table
 
 export default function App() {
-  const [dataSource, setDataSource]: [
-    dataSource: any,
-    setDataSource: Function
-  ] = useState([])
+  const [dataSource, setDataSource] = useState<[]>([])
   const [isModalOpen, setIsModalOpen] = useState(false)
   const lesson: any = useRef(null)
   const [form] = Form.useForm()
 
-  const [realmResults, steRealmResults]: [
-    realmResults: any,
-    steRealmResults: Function
-  ] = useState()
+  const [realmResults, steRealmResults] = useState<any>()
 
   useEffect(() => {
+    console.log('student')
     handleQuery()
   }, [])
 
@@ -53,7 +48,7 @@ export default function App() {
       const params = Utils.jionSearchParams(values)
       const result = await StudentController.filtered(params)
 
-      steRealmResults(result.sorted('modifyAt', true))
+      steRealmResults(result?.sorted('modifyAt', true))
     } catch (e) {
       message.error('查询失败')
       console.log(e)

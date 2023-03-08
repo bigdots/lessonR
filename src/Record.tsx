@@ -41,18 +41,14 @@ const calWrap: React.CSSProperties = {
 }
 
 const Record: React.FC = () => {
-  const [dataSource, setDataSource]: [dataSource: any[], setDataSource: any] =
-    useState([])
+  const [dataSource, setDataSource] = useState<any[]>([])
 
   const [isModalOpen, setIsModalOpen] = useState(false)
   const lesson: any = useRef(null)
 
   const { RangePicker } = DatePicker
 
-  const [realmResults, steRealmResults]: [
-    realmResults: any,
-    steRealmResults: Function
-  ] = useState()
+  const [realmResults, steRealmResults] = useState<any>()
 
   const [form] = Form.useForm()
 
@@ -81,7 +77,7 @@ const Record: React.FC = () => {
       const result = await RecordController.filtered(searchStr.join('&&'))
 
       //按照开始时间排序
-      steRealmResults(result.sorted('startTime'))
+      steRealmResults(result?.sorted('startTime'))
     } catch (e) {
       message.error('查询失败，请联系管理员')
       console.log(e)

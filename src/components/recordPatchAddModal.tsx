@@ -62,10 +62,7 @@ function RecordPatchAddModal() {
 
   const setKey = useSetRecoilState(clendarKey)
 
-  const [studentOptions, setStudentOptions]: [
-    studentOptions: any[],
-    setStudentOptions: any
-  ] = useState([])
+  const [studentOptions, setStudentOptions] = useState<any[]>([])
 
   const showModal = () => {
     setOpen(true)
@@ -75,7 +72,7 @@ function RecordPatchAddModal() {
     // 查询学生
     Roles.filtered(`status='1'`).then((result) => {
       const arr: any[] = []
-      result.forEach((item: any) => {
+      result?.forEach((item: any) => {
         arr.push({
           label: item.name,
           value: item.name,

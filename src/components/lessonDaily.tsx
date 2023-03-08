@@ -10,6 +10,7 @@ import lunisolar from 'lunisolar'
 import { useSetRecoilState } from 'recoil'
 import { clendarKey } from '../state'
 import { v4 as uuidv4 } from 'uuid'
+import { Results, Object } from 'realm'
 
 const right = style({
   height: '100%',
@@ -57,7 +58,7 @@ const taskItem = style({
 })
 
 function LessonDaily({ date }: { date: Dayjs }) {
-  const [data, setData]: [data: any[], setData: any] = useState([])
+  const [data, setData] = useState<any>([])
 
   const lesson: any = useRef(null)
 
@@ -66,7 +67,7 @@ function LessonDaily({ date }: { date: Dayjs }) {
   useEffect(() => {
     RecordController.filtered(`date='${date.format('YYYY/MM/DD')}'`).then(
       (results) => {
-        setData(results)
+        results && setData(results)
       }
     )
   }, [date])
@@ -94,7 +95,7 @@ function LessonDaily({ date }: { date: Dayjs }) {
 
   const [isModalOpen, setIsModalOpen] = useState(false)
 
-  const lis = data.map((item) => {
+  const lis = data?.map((item: any) => {
     return {
       color: 'red',
       children: (
@@ -120,7 +121,7 @@ function LessonDaily({ date }: { date: Dayjs }) {
     }
   })
 
-  lis.push({
+  lis?.push({
     color: 'red',
     children: (
       <RecordAddModal type={ModalType.add}>

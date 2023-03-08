@@ -60,7 +60,7 @@ const dateFullCellRender = (date: Dayjs) => {
 export default function App() {
   const [RealmReady, setReady] = useState(false)
 
-  const [date, setDate] = useState(() => dayjs())
+  const [date, setDate] = useState(dayjs())
   const Key = useRecoilValue(clendarKey)
   useEffect(() => {
     console.log('calendar')

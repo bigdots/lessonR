@@ -1,4 +1,4 @@
-import realm from '../model/index'
+import realmPromise from '../model/index'
 import dayjs from 'dayjs'
 // import { UpdateMode } from 'realm'
 const { UUID } = Realm.BSON
@@ -6,21 +6,21 @@ const { UUID } = Realm.BSON
 export class Controller {
   constructor(schema: any) {
     this.schema = schema
-    this.realmPromise.then((realm: Realm) => {
+    this.realmPromise.then((realm: Realm | void) => {
       this.realm = realm
     })
   }
 
   protected schema
 
-  protected realm: Realm | null = null
+  protected realm: Realm | void = undefined
 
-  private realmPromise = realm
+  private realmPromise = realmPromise
 
   objectForPrimaryKey(promaryKey: Realm.BSON.UUID) {
-    return this.realmPromise.then((realm: Realm) => {
+    return this.realmPromise.then((realm: Realm | void) => {
       // return realm.objects(this.schema?.name)
-      return realm.objectForPrimaryKey(this.schema?.name, promaryKey)
+      return realm?.objectForPrimaryKey(this.schema?.name, promaryKey)
     })
   }
 
@@ -36,23 +36,23 @@ export class Controller {
 
   // 清除数据
   async clear() {
-    return this.realmPromise.then((realm: Realm) => {
+    return this.realmPromise.then((realm: Realm | void) => {
       // 获取两周前的今天
       const tag = dayjs(new Date()).subtract(2, 'week').toDate()
       const crash = realm
-        .objects(this.schema?.name)
+        ?.objects(this.schema?.name)
         .filtered('isDelete == true')
         .filtered('modifyAt < $0', tag)
       // console.log(crash.length)
-      realm.write(() => {
+      realm?.write(() => {
         realm.delete(crash)
       })
     })
   }
 
   create(data: any, mode?: any): Promise<void> {
-    return this.realmPromise.then((realm: Realm) => {
-      realm.write(() => {
+    return this.realmPromise.then((realm: Realm | void) => {
+      realm?.write(() => {
         mode
           ? realm.create(this.schema?.name, this._handleDefaultData(data), mode)
           : realm.create(this.schema?.name, this._handleDefaultData(data))
@@ -76,9 +76,9 @@ export class Controller {
   }
 
   createPatch(datas: any[], mode?: any) {
-    console.log(datas)
-    return this.realmPromise.then((realm: Realm) => {
-      realm.write(() => {
+    // console.log(datas)
+    return this.realmPromise.then((realm: Realm | void) => {
+      realm?.write(() => {
         datas.forEach((data) => {
           mode
             ? realm.create(
@@ -92,25 +92,25 @@ export class Controller {
     })
   }
 
-  objects(): Promise<Realm.Results<Realm.Object<unknown, never>>> {
-    return this.realmPromise.then((realm: Realm) => {
-      return realm.objects(this.schema?.name)
+  objects(): Promise<Realm.Results<Realm.Object<unknown, never>> | undefined> {
+    return this.realmPromise.then((realm: Realm | void) => {
+      return realm?.objects(this.schema?.name)
     })
   }
 
   close() {
-    return this.realmPromise.then((realm: Realm) => {
-      realm.close()
+    return this.realmPromise.then((realm: Realm | void) => {
+      realm?.close()
     })
   }
 
   filtered(
     paramsString?: string
-  ): Promise<Realm.Results<Realm.Object<unknown, never>>> {
+  ): Promise<Realm.Results<Realm.Object<unknown, never>> | undefined> {
     return this.objects().then((objects) => {
-      const res = objects.filtered('isDelete == false')
+      const res = objects?.filtered('isDelete == false')
       if (paramsString) {
-        return res.filtered(paramsString)
+        return res?.filtered(paramsString)
       }
 
       // 按照修改时间的先后顺序排列

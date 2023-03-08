@@ -6,7 +6,7 @@ import * as mathjs from 'mathjs'
 import { DateType, Formatter } from './Ycontants'
 import { LineOptions, Pieoption } from './components/ChatComponent'
 import ChartComponent from './components/ChatComponent'
-import dayjs from 'dayjs'
+import dayjs, { Dayjs } from 'dayjs'
 
 const { RangePicker } = DatePicker
 const { chain } = mathjs
@@ -18,11 +18,13 @@ import {
 } from '@ant-design/icons'
 
 function Chart() {
-  const [size, setSize]: [size: any, setSize: Function] = useState('year')
+  const [size, setSize] = useState<
+    'date' | 'month' | 'year' | 'quarter' | 'week' | 'time' | undefined
+  >('year')
 
-  const [optionsList, setOptionsList] = useState([{}, {}, {}, {}])
+  const [optionsList, setOptionsList] = useState<any[]>([])
 
-  const [date, setDate]: [date: any, setDate: Function] = useState([
+  const [date, setDate] = useState<[Dayjs, Dayjs]>([
     dayjs().startOf(DateType.year),
     dayjs().endOf(DateType.year),
   ])
@@ -49,7 +51,7 @@ function Chart() {
         lineYAxis2.set(x, 0)
       })
 
-      list.forEach((item: any, index: number) => {
+      list?.forEach((item: any, index: number) => {
         const current = dayjs()
 
         const mapkey = dayjs(item.date).format(

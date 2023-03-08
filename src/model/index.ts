@@ -1,3 +1,4 @@
+import { ipcRenderer } from 'electron'
 import Realm from 'realm'
 
 export class Student extends Realm.Object {
@@ -73,31 +74,21 @@ export class Record extends Realm.Object {
   }
 }
 
-const config = {
-  path: 'realmData',
-  schemaVersion: 1,
-  deleteRealmIfMigrationNeeded: true, //debug
-  schema: [Student, Record],
+async function run(): Promise<Realm> {
+  // get userdataPath
+  const dbpath = await ipcRenderer.invoke('get-path', 'data.realm')
+  console.log('db path', dbpath)
+
+  return Realm.open({
+    path: dbpath,
+    schemaVersion: 1,
+    // deleteRealmIfMigrationNeeded: true, //debug
+    schema: [Student, Record],
+  })
 }
 
-const realm: Promise<Realm> = Realm.open(config)
+const realmPromise = run().catch((err) => {
+  console.error('Failed to open realm:', err)
+})
 
-export default realm
-
-// 远程储存
-// const app = new Realm.App({ id: 'yzg' })
-// const user = this.app.logIn(Realm.Credentials.anonymous())
-// this.realmPromise = this.user
-//   .then((user) => {
-//     return Realm.open({
-//       schema: [schema],
-//       sync: {
-//         user: user,
-//         flexible: true,
-//       },
-//     })
-//   })
-//   .catch((e) => {
-//     console.error(e)
-//     throw new Error('用户登录realm失败')
-//   })
+export default realmPromise

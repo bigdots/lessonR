@@ -49,7 +49,9 @@ function ChartComponent(props: any) {
 
   useEffect(() => {
     //每次当option变化时，再次setOptions
-    chart.current.setOption(option)
+    if (option) {
+      chart.current.setOption(option)
+    }
   }, [option])
 
   const style: React.CSSProperties = {

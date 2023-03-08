@@ -42,10 +42,7 @@ function RecordAddModal(props: any) {
     }
   }, [form, props.data])
 
-  const [studentOptions, setStudentOptions]: [
-    studentOptions: any[],
-    setStudentOptions: any
-  ] = useState([])
+  const [studentOptions, setStudentOptions] = useState<any[]>([])
 
   const showModal = () => {
     setOpen(true)
@@ -55,7 +52,7 @@ function RecordAddModal(props: any) {
     StudentController.filtered(`status=${STATUS.keep}`).then((result) => {
       const arr: any[] = []
       let index = 0
-      result.sorted('modifyAt', true).forEach((item: any) => {
+      result?.sorted('modifyAt', true).forEach((item: any) => {
         arr.push({
           label: item.name,
           value: item.name,
