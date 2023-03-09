@@ -4,7 +4,7 @@ import StudentController from '../controller/student'
 import { ModalType, selectOptions } from '../Ycontants'
 // import { UpdateMode } from 'realm'
 
-function StudentPatchAddModal(props: any) {
+function StudentAddModal(props: any) {
   const [open, setOpen] = useState(false)
   const [confirmLoading, setConfirmLoading] = useState(false)
   const [form] = Form.useForm()
@@ -62,9 +62,9 @@ function StudentPatchAddModal(props: any) {
           'modified'
         )
       }
-
-      message.success('添加成功')
+      message.success('操作成功')
       setOpen(false)
+      form?.resetFields()
     } catch (e) {
       console.error(e)
       message.error('操作失败，请联系管理员')
@@ -75,6 +75,7 @@ function StudentPatchAddModal(props: any) {
 
   const handleCancel = () => {
     setOpen(false)
+    form?.resetFields()
   }
 
   return (
@@ -138,4 +139,4 @@ function StudentPatchAddModal(props: any) {
   )
 }
 
-export default StudentPatchAddModal
+export default StudentAddModal

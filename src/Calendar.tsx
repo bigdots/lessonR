@@ -10,6 +10,9 @@ import { DAY } from './Ycontants'
 import lunisolar from 'lunisolar'
 import { useRecoilValue } from 'recoil'
 import { clendarKey } from './state'
+import { RecordObject } from './global'
+
+// import RecordDeclare from './app.d'
 
 const dateFullCellRender = (date: Dayjs) => {
   const content = style({

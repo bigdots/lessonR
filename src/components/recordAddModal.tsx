@@ -109,6 +109,7 @@ function RecordAddModal(props: any) {
       setKey(uuidv4())
       message.success('操作成功')
       setOpen(false)
+      form?.resetFields()
     } catch (e) {
       message.error('操作失败，请联系管理员')
       console.error(e)
@@ -119,6 +120,7 @@ function RecordAddModal(props: any) {
 
   const handleCancel = () => {
     setOpen(false)
+    form?.resetFields()
   }
 
   const handleTimeChange = (time: RangeValue<Dayjs>) => {

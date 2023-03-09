@@ -1,5 +1,6 @@
 import realmPromise from '../model/index'
 import dayjs from 'dayjs'
+import { RecordObject } from '@/global'
 // import { UpdateMode } from 'realm'
 const { UUID } = Realm.BSON
 
@@ -51,11 +52,15 @@ export class Controller {
   }
 
   create(data: any, mode?: any): Promise<void> {
+    const schemaName = this.schema?.name
+
     return this.realmPromise.then((realm: Realm | void) => {
       realm?.write(() => {
-        mode
-          ? realm.create(this.schema?.name, this._handleDefaultData(data), mode)
-          : realm.create(this.schema?.name, this._handleDefaultData(data))
+        if (mode) {
+          realm.create(schemaName, this._handleDefaultData(data, mode), mode)
+        } else {
+          realm.create(schemaName, this._handleDefaultData(data))
+        }
       })
     })
   }

@@ -40,7 +40,7 @@ const calWrap: React.CSSProperties = {
   padding: '10px',
 }
 
-const Record: React.FC = () => {
+const RecordPage: React.FC = () => {
   const [dataSource, setDataSource] = useState<any[]>([])
 
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -324,4 +324,4 @@ const Record: React.FC = () => {
   )
 }
 
-export default Record
+export default RecordPage
