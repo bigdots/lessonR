@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import { Badge, Calendar, Space, Spin } from 'antd'
 import dayjs, { Dayjs } from 'dayjs'
 import RecordPatchAddModal from './components/recordPatchAddModal'
@@ -6,40 +6,38 @@ import RecordController from './controller/record'
 import RealmPromise from './model/index'
 import LessonDaily from './components/lessonDaily'
 import { style } from 'typestyle'
-import { DAY } from './Ycontants'
+import {DateType, DAY, Formatter} from './Ycontants'
 import lunisolar from 'lunisolar'
-import { useRecoilValue } from 'recoil'
-import { clendarKey } from './state'
-import { RecordObject } from './global'
+// import { useRecoilValue } from 'recoil'
+// import { clendarKey } from './state'
+// import { RecordObject } from './global'
 
 // import RecordDeclare from './app.d'
 
-const dateFullCellRender = (date: Dayjs) => {
-  const content = style({
-    boxSizing: 'border-box',
-    height: '100px',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-around',
-  })
+const content = style({
+  boxSizing: 'border-box',
+  height: '100px',
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'space-around',
+})
 
-  const contentWeekend = style({
-    boxSizing: 'border-box',
-    height: '100px',
-    display: 'flex',
-    flexDirection: 'column',
-    justifyContent: 'space-around',
-    color: '#F73131',
-  })
+const contentWeekend = style({
+  boxSizing: 'border-box',
+  height: '100px',
+  display: 'flex',
+  flexDirection: 'column',
+  justifyContent: 'space-around',
+  color: '#F73131',
+})
 
-  // 读取
-  const realmResult = RecordController.searchSnyc(
-    `date=='${date.format('YYYY/MM/DD')}'`
-  )
+const dateFullCellRender = (date: Dayjs,recordsMap:any) => {
 
   const isWeekend = date.day() === DAY.Sun || date.day() === DAY.Sat
 
   const lunisolarVal = lunisolar(date.toDate())
+
+  const currentRecords = recordsMap.get(date.format(Formatter.day))
 
   return (
     <div className={isWeekend ? contentWeekend : content}>
@@ -50,8 +48,8 @@ const dateFullCellRender = (date: Dayjs) => {
       )}
       <span>
         <Space>
-          {realmResult &&
-            realmResult.map((item: any) => {
+          {currentRecords &&
+            currentRecords.map((item: any) => {
               return <Badge status="success" key={item._id} />
             })}
         </Space>
@@ -61,25 +59,68 @@ const dateFullCellRender = (date: Dayjs) => {
 }
 
 export default function App() {
-  const [RealmReady, setReady] = useState(false)
+
 
   const [date, setDate] = useState(dayjs())
-  const Key = useRecoilValue(clendarKey)
+  // const Key = useRecoilValue(clendarKey)
+  const [recordsMap,setRecordsMap] = useState(new Map())
+
+  // const recordsRealmRef = useRef<Realm.Results<any>|undefined>()
+
+  const [recordsRealm, setRecordsRealm] = useState<any|undefined>()
+
   useEffect(() => {
     console.log('calendar')
-    RealmPromise.then(() => {
-      setReady(true)
-    }).catch((e) => {
-      console.error('open realm error', e)
+    //  取本月+前后两个月，一共三月
+    const  start= date.startOf(DateType.month).subtract(15,DateType.day).format(Formatter.day)
+    const end = date.endOf(DateType.month).add(15,DateType.day).format(Formatter.day)
+    // 查询课程数据
+    RecordController.filtered().then((recordsRealm)=>{
+      const records = recordsRealm?.filtered('date > $0', start).filtered('date < $0', end).sorted('date')
+      setRecordsRealm(records)
     })
+
   }, [])
+
+  useEffect(()=>{
+    recordsRealm?.addListener( (collection:any)=>{
+      console.log('recordsRealmRef listener')
+      const recordsMap:Map<string,any> = new Map()
+      collection?.forEach((item:any)=>{
+        if(!recordsMap.has(item.date)){
+          recordsMap.set(item.date,[item])
+        }else{
+          recordsMap.get(item.date).push(item)
+        }
+      })
+      console.log(recordsMap)
+      setRecordsMap(recordsMap)
+    })
+  },[recordsRealm])
 
   const onSelect = async (date: Dayjs) => {
     setDate(date)
   }
 
-  const handlePanelChange = (date: Dayjs, mode: string) => {
-    console.log('handlePanelChange')
+  const handlePanelChange = async (date: Dayjs, mode: string) => {
+
+    if(mode ===DateType.year ){
+        return;
+    }
+
+    //  取本月+前后两个月，一共三月
+    const  start= date.startOf(DateType.month).subtract(15,DateType.day).format(Formatter.day)
+    const end = date.endOf(DateType.month).add(15,DateType.day).format(Formatter.day)
+
+    console.log(start)
+    console.log(end)
+    // 查询课程数据
+    const recordsRealm = await RecordController.filtered()
+
+    const records = recordsRealm?.filtered('date > $0', start).filtered('date < $0', end).sorted('date')
+    // 修改查询realm
+    setRecordsRealm(records)
+
   }
 
   const contentWrap = style({
@@ -97,45 +138,29 @@ export default function App() {
     padding: '15px',
   }
 
+
+
   const render = () => {
-    if (RealmReady) {
-      return (
-        <>
-          <div style={{ position: 'absolute', top: '30px', left: '50px' }}>
-            <RecordPatchAddModal />
-          </div>
-          <aside></aside>
-          <section className={contentWrap}>
-            <div style={wrapperStyle}>
-              <Calendar
-                key={Key}
-                onSelect={onSelect}
-                onPanelChange={handlePanelChange}
-                dateFullCellRender={(date) => dateFullCellRender(date)}
-              />
-            </div>
-            <div>
-              <LessonDaily date={date} />
-            </div>
-          </section>
-        </>
-      )
-    } else {
-      return (
-        <div
-          style={{
-            height: '100vh',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-          }}
-        >
-          <Spin tip="Loading" size="large">
-            <div className="content" />
-          </Spin>
+    return (
+      <>
+        <div style={{ position: 'absolute', top: '30px', left: '50px' }}>
+          <RecordPatchAddModal />
         </div>
-      )
-    }
+        <aside></aside>
+        <section className={contentWrap}>
+          <div style={wrapperStyle}>
+            <Calendar
+              onSelect={onSelect}
+              onPanelChange={handlePanelChange}
+              dateFullCellRender={(date) => dateFullCellRender(date,recordsMap)}
+            />
+          </div>
+          <div>
+            <LessonDaily date={date} data={recordsMap.get(date.format(Formatter.day))}/>
+          </div>
+        </section>
+      </>
+    )
   }
 
   return render()

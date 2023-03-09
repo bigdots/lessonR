@@ -4,13 +4,10 @@ import { useEffect, useRef, useState } from 'react'
 import RecordController from '../controller/record'
 import dayjs, { Dayjs } from 'dayjs'
 import RecordAddModal from './recordAddModal'
-import { Formatter, ModalType, NICECOLORS } from '../Ycontants'
+import { Formatter, ModalType, NICECOLORS } from '@/Ycontants'
 import { style } from 'typestyle'
 import lunisolar from 'lunisolar'
-import { useSetRecoilState } from 'recoil'
-import { clendarKey } from '../state'
-import { v4 as uuidv4 } from 'uuid'
-import { Results, Object } from 'realm'
+
 
 const right = style({
   height: '100%',
@@ -57,20 +54,8 @@ const taskItem = style({
   color: '#fff',
 })
 
-function LessonDaily({ date }: { date: Dayjs }) {
-  const [data, setData] = useState<any>([])
-
+function LessonDaily({ date,data=[] }: { date: Dayjs,data:any }) {
   const lesson: any = useRef(null)
-
-  const setKey = useSetRecoilState(clendarKey)
-
-  useEffect(() => {
-    RecordController.filtered(`date='${date.format('YYYY/MM/DD')}'`).then(
-      (results) => {
-        results && setData(results)
-      }
-    )
-  }, [date])
 
   const handleDel = (item: any) => {
     setIsModalOpen(true)
@@ -84,7 +69,6 @@ function LessonDaily({ date }: { date: Dayjs }) {
 
     try {
       await RecordController.delete(lesson.current._id)
-      setKey(uuidv4())
       message.success('删除成功')
       setIsModalOpen(false)
     } catch (e) {

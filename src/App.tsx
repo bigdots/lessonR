@@ -3,7 +3,7 @@ import { ConfigProvider, Tabs } from 'antd'
 import dayjs from 'dayjs'
 import 'dayjs/locale/zh-cn'
 import locale from 'antd/locale/zh_CN'
-import { useSetRecoilState } from 'recoil'
+// import { useSetRecoilState } from 'recoil'
 import { v4 as uuidv4 } from 'uuid'
 import { clendarKey } from './state'
 // import { RecoilRoot } from 'recoil'
@@ -43,24 +43,24 @@ const tabItems = [
     children: <Calendar></Calendar>,
   },
   {
-    label: '课时',
+    label: '123',
     key: Keys.Record,
     children: <Record></Record>,
   },
   {
-    label: '学生',
+    label: '345',
     key: Keys.Student,
     children: <Student></Student>,
   },
 ]
 
 export default function App() {
-  const setKey = useSetRecoilState(clendarKey)
+  // const setKey = useSetRecoilState(clendarKey)
   const onChange = (key: string) => {
     // 因为日历页面与其它业务逻辑挂钩，所以进入日历页面，重新渲染日历页面
-    if (key === Keys.Calendar) {
-      setKey(uuidv4())
-    }
+    // if (key === Keys.Calendar) {
+    //   setKey(uuidv4())
+    // }
   }
 
   useEffect(() => {

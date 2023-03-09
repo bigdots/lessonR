@@ -5,11 +5,11 @@ import StudentController from '../controller/student'
 import { TimePicker } from 'antd'
 import dayjs, { Dayjs } from 'dayjs'
 import { RangeValue } from 'rc-picker/lib/interface'
-import { ModalType, STATUS } from '../Ycontants'
+import { ModalType, STATUS } from '@/Ycontants'
 import Utils from '../utils'
-import { useSetRecoilState } from 'recoil'
-import { clendarKey } from '../state'
-import { v4 as uuidv4 } from 'uuid'
+// import { useSetRecoilState } from 'recoil'
+// import { clendarKey } from '../state'
+// import { v4 as uuidv4 } from 'uuid'
 // import { UpdateMode } from 'realm'
 
 function RecordAddModal(props: any) {
@@ -20,7 +20,7 @@ function RecordAddModal(props: any) {
 
   let pageType = useRef(ModalType.add)
 
-  const setKey = useSetRecoilState(clendarKey)
+  // const setKey = useSetRecoilState(clendarKey)
 
   useEffect(() => {
     if (props.data) {
@@ -83,7 +83,7 @@ function RecordAddModal(props: any) {
     const { name, date, tiemrange, duration } = fields
 
     const index = Utils.findIndexByName(name, studentOptions)
-    return await RecordController?.create(
+    return RecordController?.create(
       {
         _id: props.data._id,
         student: studentOptions[index].object,
@@ -106,7 +106,7 @@ function RecordAddModal(props: any) {
       } else {
         await handleUpdate(fields)
       }
-      setKey(uuidv4())
+      // setKey(uuidv4())
       message.success('操作成功')
       setOpen(false)
       form?.resetFields()

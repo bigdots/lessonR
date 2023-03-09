@@ -17,9 +17,9 @@ import {
   message,
 } from 'antd'
 
-import { useSetRecoilState } from 'recoil'
-import { clendarKey } from '../state'
-import { v4 as uuidv4 } from 'uuid'
+// import { useSetRecoilState } from 'recoil'
+// import { clendarKey } from '../state'
+// import { v4 as uuidv4 } from 'uuid'
 
 const { RangePicker } = DatePicker
 
@@ -60,7 +60,7 @@ function RecordPatchAddModal() {
   const [confirmLoading, setConfirmLoading] = useState(false)
   const [form] = Form.useForm()
 
-  const setKey = useSetRecoilState(clendarKey)
+  // const setKey = useSetRecoilState(clendarKey)
 
   const [studentOptions, setStudentOptions] = useState<any[]>([])
 
@@ -121,7 +121,7 @@ function RecordPatchAddModal() {
       })
 
       await RecordController?.createPatch(params)
-      setKey(uuidv4())
+      // setKey(uuidv4())
       message.success('操作成功')
       setOpen(false)
     } catch (e) {
