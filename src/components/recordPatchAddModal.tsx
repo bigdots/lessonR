@@ -92,7 +92,7 @@ function RecordPatchAddModal() {
       const fields = form.getFieldsValue()
 
       let days: Dayjs[] = []
-      const { daterange, frequency, name, tiemrange, duration } = fields
+      const { daterange, frequency, name, timerange, duration } = fields
       if (weekshow) {
         days = Utils.getAlldayByWeekInRange(
           daterange[0],
@@ -106,8 +106,8 @@ function RecordPatchAddModal() {
 
       const paramsModel = {
         student: studentOptions[index].object,
-        startTime: tiemrange[0],
-        endTime: tiemrange[1],
+        startTime: timerange[0],
+        endTime: timerange[1],
         duration: parseFloat(duration),
       }
 
@@ -219,7 +219,7 @@ function RecordPatchAddModal() {
 
           <Form.Item
             label="时间"
-            name="tiemrange"
+            name="timerange"
             rules={[{ required: true, message: '请选择时间' }]}
           >
             <TimePicker.RangePicker

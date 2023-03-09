@@ -108,7 +108,7 @@ function LessonDaily({ date,data=[] }: { date: Dayjs,data:any }) {
   lis?.push({
     color: 'red',
     children: (
-      <RecordAddModal type={ModalType.add}>
+      <RecordAddModal data={{date:date.format(Formatter.day)}}>
         <PlusSquareFilled className={NICECOLORS} />
       </RecordAddModal>
     ),

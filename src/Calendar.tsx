@@ -8,11 +8,7 @@ import LessonDaily from './components/lessonDaily'
 import { style } from 'typestyle'
 import {DateType, DAY, Formatter} from './Ycontants'
 import lunisolar from 'lunisolar'
-// import { useRecoilValue } from 'recoil'
-// import { clendarKey } from './state'
-// import { RecordObject } from './global'
 
-// import RecordDeclare from './app.d'
 
 const content = style({
   boxSizing: 'border-box',
@@ -59,32 +55,28 @@ const dateFullCellRender = (date: Dayjs,recordsMap:any) => {
 }
 
 export default function App() {
-
-
   const [date, setDate] = useState(dayjs())
-  // const Key = useRecoilValue(clendarKey)
   const [recordsMap,setRecordsMap] = useState(new Map())
-
-  // const recordsRealmRef = useRef<Realm.Results<any>|undefined>()
-
   const [recordsRealm, setRecordsRealm] = useState<any|undefined>()
 
   useEffect(() => {
-    console.log('calendar')
-    //  取本月+前后两个月，一共三月
-    const  start= date.startOf(DateType.month).subtract(15,DateType.day).format(Formatter.day)
-    const end = date.endOf(DateType.month).add(15,DateType.day).format(Formatter.day)
     // 查询课程数据
     RecordController.filtered().then((recordsRealm)=>{
-      const records = recordsRealm?.filtered('date > $0', start).filtered('date < $0', end).sorted('date')
-      setRecordsRealm(records)
+      setRecordsRealm(recordsRealm)
     })
 
   }, [])
 
   useEffect(()=>{
-    recordsRealm?.addListener( (collection:any)=>{
-      console.log('recordsRealmRef listener')
+    //  取本月+前后两个月，一共三月
+    const  start= date.startOf(DateType.month).subtract(15,DateType.day).format(Formatter.day)
+    const end = date.endOf(DateType.month).add(15,DateType.day).format(Formatter.day)
+    //数据筛选排序
+    const records = recordsRealm?.filtered('date > $0', start).filtered('date < $0', end).sorted('startTime')
+
+    records?.removeAllListeners()
+    records?.addListener( (collection:any)=>{
+      // console.log('recordsRealmRef listener')
       const recordsMap:Map<string,any> = new Map()
       collection?.forEach((item:any)=>{
         if(!recordsMap.has(item.date)){
@@ -93,7 +85,7 @@ export default function App() {
           recordsMap.get(item.date).push(item)
         }
       })
-      console.log(recordsMap)
+      // console.log(recordsMap)
       setRecordsMap(recordsMap)
     })
   },[recordsRealm])
@@ -108,18 +100,11 @@ export default function App() {
         return;
     }
 
-    //  取本月+前后两个月，一共三月
-    const  start= date.startOf(DateType.month).subtract(15,DateType.day).format(Formatter.day)
-    const end = date.endOf(DateType.month).add(15,DateType.day).format(Formatter.day)
-
-    console.log(start)
-    console.log(end)
     // 查询课程数据
     const recordsRealm = await RecordController.filtered()
 
-    const records = recordsRealm?.filtered('date > $0', start).filtered('date < $0', end).sorted('date')
     // 修改查询realm
-    setRecordsRealm(records)
+    setRecordsRealm(recordsRealm)
 
   }
 

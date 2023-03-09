@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Modal, Form, Select, Input, message } from 'antd'
-import StudentController from '../controller/student'
-import { ModalType, selectOptions } from '../Ycontants'
+import StudentController from '@/controller/student'
+import {ModalType, selectOptions, STATUS} from '@/Ycontants'
 // import { UpdateMode } from 'realm'
 
 function StudentAddModal(props: any) {
@@ -96,6 +96,9 @@ function StudentAddModal(props: any) {
           wrapperCol={{ span: 14 }}
           style={{ maxWidth: 600 }}
           autoComplete="off"
+          initialValues = {
+            {status:STATUS.keep}
+          }
         >
           <Form.Item
             label="姓名"

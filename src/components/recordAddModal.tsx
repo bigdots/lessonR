@@ -7,10 +7,6 @@ import dayjs, { Dayjs } from 'dayjs'
 import { RangeValue } from 'rc-picker/lib/interface'
 import { ModalType, STATUS } from '@/Ycontants'
 import Utils from '../utils'
-// import { useSetRecoilState } from 'recoil'
-// import { clendarKey } from '../state'
-// import { v4 as uuidv4 } from 'uuid'
-// import { UpdateMode } from 'realm'
 
 function RecordAddModal(props: any) {
   const { children } = props
@@ -20,27 +16,29 @@ function RecordAddModal(props: any) {
 
   let pageType = useRef(ModalType.add)
 
-  // const setKey = useSetRecoilState(clendarKey)
-
   useEffect(() => {
-    if (props.data) {
+    if (props.data && props.data._id) {
       pageType.current = ModalType.edit
     }
   }, [props])
 
   useEffect(() => {
-    if (pageType.current === ModalType.edit) {
+    // console.log(props.data)
+    if(props.data && props.data.date){
+      form.setFieldValue('date',dayjs(props.data.date))
+    }
+
+    if(props.data && props.data._id){
       const { student, startTime, endTime, duration } = props.data
       form.setFieldsValue({
         name: student?.name,
-        date: dayjs(startTime),
-        tiemrange: [dayjs(startTime), dayjs(endTime)],
+        // date: dayjs(date),
+        timerange: [dayjs(startTime), dayjs(endTime)],
         duration,
       })
-    } else {
-      form.resetFields()
     }
-  }, [form, props.data])
+
+  }, [form, props.data, open])
 
   const [studentOptions, setStudentOptions] = useState<any[]>([])
 
@@ -67,20 +65,20 @@ function RecordAddModal(props: any) {
 
   const handleAdd = async (fields: any) => {
     // 表单验证
-    const { name, date, tiemrange, duration } = fields
+    const { name, date, timerange, duration } = fields
     const index = Utils.findIndexByName(name, studentOptions)
     return RecordController?.create({
       student: studentOptions[index].object,
       date: date,
-      startTime: tiemrange[0],
-      endTime: tiemrange[1],
+      startTime: timerange[0],
+      endTime: timerange[1],
       duration: parseFloat(duration),
     })
   }
 
   const handleUpdate = async (fields: any) => {
     // 表单验证
-    const { name, date, tiemrange, duration } = fields
+    const { name, date, timerange, duration } = fields
 
     const index = Utils.findIndexByName(name, studentOptions)
     return RecordController?.create(
@@ -88,8 +86,8 @@ function RecordAddModal(props: any) {
         _id: props.data._id,
         student: studentOptions[index].object,
         date: date,
-        startTime: tiemrange[0],
-        endTime: tiemrange[1],
+        startTime: timerange[0],
+        endTime: timerange[1],
         duration: parseFloat(duration),
       },
       'modified'
@@ -167,7 +165,7 @@ function RecordAddModal(props: any) {
 
           <Form.Item
             label="时间"
-            name="tiemrange"
+            name="timerange"
             rules={[{ required: true, message: '请选择上课时间' }]}
           >
             <TimePicker.RangePicker

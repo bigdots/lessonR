@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 // import * as echarts from 'echarts'
 
 // 引入 echarts 核心模块，核心模块提供了 echarts 使用必须要的接口。

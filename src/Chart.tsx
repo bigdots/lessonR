@@ -29,14 +29,27 @@ function Chart() {
     dayjs().endOf(DateType.year),
   ])
 
-  // 查询数据，并生成图像
-  useEffect(() => {
-    // console.log('构建图形', Utils.dateSearchJoin(date))
+  const [recordsRealm,setRecordsRealm] = useState<any>()
 
-    RecordController.filtered(Utils.dateSearchJoin(date)).then((list) => {
+
+  useEffect(()=>{
+    RecordController.filtered(Utils.dateSearchJoin(date)).then((recordsRealm)=>{
+      setRecordsRealm(recordsRealm)
+    })
+  },[date,size])
+
+
+  useEffect(()=>{
+    recordsRealm?.removeAllListeners()
+
+    recordsRealm?.addListener((list:any)=>{
       // 构造图形
+      console.log('构建图形')
+      // const dataMap:Map<string,number[]> = new Map()
 
-      // console.log(list.slice(0, list.length))
+      // list.forEach((record:any)=>{
+      //
+      // })
 
       let attended = [0, 0] //已上的;课时，费用
       let unattended = [0, 0] //未上的
@@ -47,25 +60,33 @@ function Chart() {
       let lineXAxis = Utils.getAllDateInRange(date, size) // 横坐标，时间
 
       lineXAxis.forEach((x) => {
+        //横坐标日期，纵坐标为0
         lineYAxis1.set(x, 0)
         lineYAxis2.set(x, 0)
       })
 
       list?.forEach((item: any, index: number) => {
-        const current = dayjs()
+        const current = dayjs().startOf(DateType.day)
 
         const mapkey = dayjs(item.date).format(
           Formatter[size as keyof typeof Formatter]
         )
+
+
+        //计算折线图时长纵坐标
         lineYAxis1.set(
           mapkey,
           chain(lineYAxis1.get(mapkey)).add(item.duration).done()
         )
+
+        //计算折线图费用纵坐标
+        const fee = chain(item.duration).multiply(item.student.fee).done()
         lineYAxis2.set(
           mapkey,
-          chain(lineYAxis2.get(mapkey)).add(item.student.fee).done()
+          chain(lineYAxis2.get(mapkey)).add(fee).done()
         )
 
+        //计算饼图的已上，未上纵坐标
         if (dayjs(item.date).isAfter(current)) {
           // 未上
           unattended[0] = chain(unattended[0]).add(item.duration).done()
@@ -85,7 +106,8 @@ function Chart() {
         new LineOptions(lineXAxis, Array.from(lineYAxis2.values())),
       ])
     })
-  }, [date, size])
+
+  },[recordsRealm])
 
   const style: React.CSSProperties = {
     width: '100%',
