@@ -6,7 +6,6 @@ import {ModalType, selectOptions, STATUS} from '@/Ycontants'
 
 function StudentAddModal(props: any) {
   const [open, setOpen] = useState(false)
-  const [confirmLoading, setConfirmLoading] = useState(false)
   const [form] = Form.useForm()
   const { children } = props
 
@@ -37,7 +36,6 @@ function StudentAddModal(props: any) {
   }
 
   const handleOk = async () => {
-    setConfirmLoading(true)
     try {
       // 表单验证
       await form.validateFields()
@@ -68,8 +66,6 @@ function StudentAddModal(props: any) {
     } catch (e) {
       console.error(e)
       message.error('操作失败，请联系管理员')
-    } finally {
-      setConfirmLoading(false)
     }
   }
 
@@ -85,7 +81,6 @@ function StudentAddModal(props: any) {
         title="新增"
         open={open}
         onOk={handleOk}
-        confirmLoading={confirmLoading}
         onCancel={handleCancel}
         forceRender
       >

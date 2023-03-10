@@ -27,11 +27,8 @@ const contentWeekend = style({
 })
 
 const dateFullCellRender = (date: Dayjs,recordsMap:any) => {
-
   const isWeekend = date.day() === DAY.Sun || date.day() === DAY.Sat
-
   const lunisolarVal = lunisolar(date.toDate())
-
   const currentRecords = recordsMap.get(date.format(Formatter.day))
 
   return (
@@ -53,7 +50,7 @@ const dateFullCellRender = (date: Dayjs,recordsMap:any) => {
   )
 }
 
-export default function App() {
+const App:React.FC = () => {
   const [date, setDate] = useState(dayjs())
   const [recordsMap,setRecordsMap] = useState(new Map())
   const [recordsRealm, setRecordsRealm] = useState<any|undefined>()
@@ -94,17 +91,13 @@ export default function App() {
   }
 
   const handlePanelChange = async (date: Dayjs, mode: string) => {
-
     if(mode ===DateType.year ){
         return;
     }
-
     // 查询课程数据
     const recordsRealm = await RecordController.filtered()
-
     // 修改查询realm
     setRecordsRealm(recordsRealm)
-
   }
 
   const contentWrap = style({
@@ -121,8 +114,6 @@ export default function App() {
     borderRadius: '16px 0 0 16px',
     padding: '15px',
   }
-
-
 
   const render = () => {
     return (
@@ -146,6 +137,8 @@ export default function App() {
       </>
     )
   }
-
   return render()
 }
+
+
+export  default App

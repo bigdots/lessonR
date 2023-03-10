@@ -5,22 +5,19 @@ import {
   Input,
   DatePicker,
   Space,
-  Divider,
   Table,
   message,
   Modal,
 } from 'antd'
 
-import RecordAdd from './components/recordAddModal'
-import RecordController from './controller/record'
-import { Formatter, NICECOLORS } from './Ycontants'
-import RecordAddModal from './components/recordAddModal'
+import RecordAdd from '@/components/recordAddModal'
+import RecordController from '@/controller/record'
+import { Formatter, NICECOLORS } from '@/Ycontants'
+import RecordAddModal from '@/components/recordAddModal'
 import { DeleteFilled, EditFilled } from '@ant-design/icons'
-import Utils from './utils'
 import dayjs from 'dayjs'
 import { ColumnsType } from 'antd/es/table'
 import CountModal from './components/CountModal'
-// const { Column } = Table
 
 interface DataType {
   _id: any
@@ -37,47 +34,42 @@ interface DataType {
 const calWrap: React.CSSProperties = {
   display: 'flex',
   flexDirection: 'row-reverse',
-  padding: '10px',
+  padding: '10px 30px 10px 0',
 }
 
 const RecordPage: React.FC = () => {
   const [dataSource, setDataSource] = useState<any[]>([])
-
   const [isModalOpen, setIsModalOpen] = useState(false)
   const lesson: any = useRef(null)
-
   const { RangePicker } = DatePicker
-
   const [realmResults, steRealmResults] = useState<any>()
-
   const [form] = Form.useForm()
 
   useEffect(() => {
-    handleQuery()
+    RecordController.filtered().then((realmResults)=>{
+      steRealmResults(realmResults)
+    })
   }, [])
 
   // 查询
   const handleQuery = async () => {
     try {
+      setCurrent(1)  // 页码设为第一页
       const values = form.getFieldsValue()
-
       const { dateRange, name } = values
-
-      // 构造查询条件
-      let searchStr = []
-      if (dateRange && dateRange[1]) {
-        searchStr.push(`date <= '${values.dateRange[1].format(Formatter.day)}'`)
+      let resultRealm = await RecordController.filtered()
+      if (name) {
+        resultRealm = resultRealm?.filtered(`student.name CONTAINS '${name}'`)
       }
       if (dateRange && dateRange[0]) {
-        searchStr.push(`date >= '${values.dateRange[0].format(Formatter.day)}'`)
+        resultRealm = resultRealm?.filtered(`date >= '${dateRange[0].format(Formatter.day)}'`)
       }
-      if (name) {
-        searchStr.push(`student.name == '${values.name}'`)
+      if (dateRange && dateRange[1]) {
+        resultRealm = resultRealm?.filtered(`date <= '${dateRange[1].format(Formatter.day)}'`)
       }
-      const result = await RecordController.filtered(searchStr.join('&&'))
-
+      resultRealm = resultRealm?.sorted('startTime')
       //按照开始时间排序
-      steRealmResults(result?.sorted('startTime'))
+      steRealmResults(resultRealm)
     } catch (e) {
       message.error('查询失败，请联系管理员')
       console.log(e)
@@ -156,13 +148,12 @@ const RecordPage: React.FC = () => {
 
   const rowSelection = {
     selectedRowKeys,
-    onChange: (newSelectedRowKeys: React.Key[]) => {
+    onChange: () => {
       setSelectedRowKeys(Array.from(selectedRowKeysMap.current))
     },
     onSelect: (
       record: DataType,
       selected: boolean,
-      selectedRows: DataType[]
     ) => {
       if (selected) {
         selectedRowKeysMap.current.add(record._id)
@@ -172,7 +163,6 @@ const RecordPage: React.FC = () => {
         selectedRowsMap.current.delete(record._id)
       }
     },
-
     onSelectAll: (
       selected: boolean,
       selectedRows: DataType[],
@@ -230,7 +220,6 @@ const RecordPage: React.FC = () => {
         setPageSize(newpageSize)
         return
       }
-
       setCurrent(page)
     },
   }
@@ -266,7 +255,7 @@ const RecordPage: React.FC = () => {
   }, [realmResults, current, total, pageSize])
 
   return (
-    <>
+    <div style={{padding:"0 15px"}}>
       <Form
         name="basic"
         layout="inline"
@@ -296,7 +285,7 @@ const RecordPage: React.FC = () => {
           </Form.Item>
         </Space>
       </Form>
-      <Divider />
+      {/*<Divider />*/}
 
       <div style={calWrap}>
         <CountModal dataSource={selectedRowsMap.current}></CountModal>
@@ -304,6 +293,7 @@ const RecordPage: React.FC = () => {
 
       <Table
         columns={columns}
+        bordered
         rowSelection={rowSelection}
         pagination={Pagination}
         rowKey="_id"
@@ -320,7 +310,7 @@ const RecordPage: React.FC = () => {
       >
         <p>删除后不可恢复，确认删除此数据吗？</p>
       </Modal>
-    </>
+    </div>
   )
 }
 

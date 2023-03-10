@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { DatePicker, Space, Row, Col, Radio, RadioChangeEvent } from 'antd'
-import RecordController from './controller/record'
-import Utils from './utils'
+import RecordController from '@/controller/record'
+import Utils from '@/utils'
 import * as mathjs from 'mathjs'
-import { DateType, Formatter } from './Ycontants'
-import { LineOptions, Pieoption } from './components/ChatComponent'
-import ChartComponent from './components/ChatComponent'
+import { DateType, Formatter } from '@/Ycontants'
+import { LineOptions, Pieoption } from '@/components/ChatComponent'
+import ChartComponent from '@/components/ChatComponent'
 import dayjs, { Dayjs } from 'dayjs'
 const { RangePicker } = DatePicker
 const { chain } = mathjs
@@ -23,7 +23,6 @@ const chartContainer: React.CSSProperties = {
 
 function Chart() {
   const [size, setSize] = useState<any>('year')
-
   const [optionsList, setOptionsList] = useState<any[]>([])
 
   const [date, setDate] = useState<[Dayjs, Dayjs]>([
@@ -56,7 +55,6 @@ function Chart() {
 
   useEffect(()=>{
     recordsRealm?.removeAllListeners()
-
     recordsRealm?.addListener((collection:any)=>{
       // 构造图形
       console.log('构建图形')
@@ -76,7 +74,6 @@ function Chart() {
       const attended = countInRange([date[0],dayjs().startOf(DateType.day)],collection)
       const unattended = countInRange([dayjs().startOf(DateType.day),date[1]],collection)
       const lineXAxis = Array.from(hourMap.keys())
-
       const countHour = chain(attended.hours).add(unattended.hours).done()
       const countFee = chain(attended.fee).add(unattended.fee).done()
 
@@ -93,7 +90,7 @@ function Chart() {
 
 
   const handleSizeChange = (e: RadioChangeEvent) => {
-    console.log(e.target.value)
+    // console.log(e.target.value)
     setSize(e.target.value)
   }
 
