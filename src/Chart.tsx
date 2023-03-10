@@ -90,14 +90,19 @@ function Chart() {
 
 
   const handleSizeChange = (e: RadioChangeEvent) => {
-    // console.log(e.target.value)
-    setSize(e.target.value)
+    // 处理时间数据，如果原来是小日期区间，无法覆盖新区间，则取新区间
+    const size = e.target.value
+    const start = dayjs.min( date[0].startOf(size),date[0])
+    const end = dayjs.max(date[1].endOf(size),date[1])
+    // console.log(start.format(Formatter.day),end.format(Formatter.day))
+    setDate([start,end])
+    setSize(size)
   }
 
   const handleDateChange = (date: any) => {
     date[0] = date[0].startOf(DateType[size as keyof typeof DateType])
     date[1] = date[1].endOf(DateType[size as keyof typeof DateType])
-    console.log(date)
+    // console.log(date)
     setDate(date)
   }
 
@@ -124,7 +129,7 @@ function Chart() {
         <h2>
           <Space style={{ fontSize: '21px' }}>
             <ClockCircleFilled />
-            <span>time</span>
+            <span>课时</span>
           </Space>
         </h2>
         <Row gutter={16}>
@@ -145,7 +150,7 @@ function Chart() {
         <h2>
           <Space style={{ fontSize: '21px' }}>
             <EuroCircleFilled />
-            <span>fee</span>
+            <span>课酬</span>
           </Space>
         </h2>
         <Row gutter={16}>
