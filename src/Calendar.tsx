@@ -42,7 +42,7 @@ const dateFullCellRender = (date: Dayjs,recordsMap:any) => {
         <Space>
           {currentRecords &&
             currentRecords.map((item: any) => {
-              return <Badge status="success" key={item._id} />
+              return <Badge status="success" dot={true} key={item._id} />
             })}
         </Space>
       </span>
