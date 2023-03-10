@@ -1,12 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Modal, Form, Select, Input, message } from 'antd'
-import StudentController from '../controller/student'
-import { ModalType, selectOptions } from '../Ycontants'
+import StudentController from '@/controller/student'
+import {ModalType, selectOptions, STATUS} from '@/Ycontants'
 // import { UpdateMode } from 'realm'
 
 function StudentAddModal(props: any) {
   const [open, setOpen] = useState(false)
-  const [confirmLoading, setConfirmLoading] = useState(false)
   const [form] = Form.useForm()
   const { children } = props
 
@@ -37,7 +36,6 @@ function StudentAddModal(props: any) {
   }
 
   const handleOk = async () => {
-    setConfirmLoading(true)
     try {
       // 表单验证
       await form.validateFields()
@@ -68,8 +66,6 @@ function StudentAddModal(props: any) {
     } catch (e) {
       console.error(e)
       message.error('操作失败，请联系管理员')
-    } finally {
-      setConfirmLoading(false)
     }
   }
 
@@ -85,7 +81,6 @@ function StudentAddModal(props: any) {
         title="新增"
         open={open}
         onOk={handleOk}
-        confirmLoading={confirmLoading}
         onCancel={handleCancel}
         forceRender
       >
@@ -96,6 +91,9 @@ function StudentAddModal(props: any) {
           wrapperCol={{ span: 14 }}
           style={{ maxWidth: 600 }}
           autoComplete="off"
+          initialValues = {
+            {status:STATUS.keep}
+          }
         >
           <Form.Item
             label="姓名"

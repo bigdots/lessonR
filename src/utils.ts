@@ -38,7 +38,7 @@ class Utils {
   }
 
   static findIndexByName(name: string, arr: any[]) {
-    return arr.findIndex((item: any, index: number) => {
+    return arr.findIndex((item: any) => {
       return item.label === name
     })
   }
@@ -59,10 +59,10 @@ class Utils {
   }
 
   static getAllDateInRange(dateRange: Dayjs[], step: any) {
-    const result: string[] = []
+    const result: Dayjs[] = []
     let current = dateRange[0].clone()
     while (!current.isAfter(dateRange[1])) {
-      result.push(current.format(Formatter[step as keyof typeof Formatter]))
+      result.push(current)
       current = current.add(1, step)
     }
 

@@ -10,13 +10,11 @@ import {
   message,
   Modal,
 } from 'antd'
-import StudentAddModal from './components/studentAddModal'
-import StudentController from './controller/student'
-import { Formatter, NICECOLORS, selectOptions } from './Ycontants'
+import StudentAddModal from '@/components/studentAddModal'
+import StudentController from '@/controller/student'
+import { Formatter, NICECOLORS, selectOptions } from '@/Ycontants'
 import { DeleteFilled, EditFilled } from '@ant-design/icons'
-import Utils from './utils'
 import dayjs from 'dayjs'
-
 const { Column } = Table
 
 export default function App() {
@@ -24,12 +22,12 @@ export default function App() {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const lesson: any = useRef(null)
   const [form] = Form.useForm()
-
   const [realmResults, steRealmResults] = useState<any>()
 
   useEffect(() => {
-    console.log('student')
-    handleQuery()
+    StudentController.filtered().then((res)=>{
+      steRealmResults(res)
+    })
   }, [])
 
   useEffect(() => {
@@ -45,10 +43,16 @@ export default function App() {
   const handleQuery = async () => {
     try {
       const values = form.getFieldsValue()
-      const params = Utils.jionSearchParams(values)
-      const result = await StudentController.filtered(params)
-
-      steRealmResults(result?.sorted('modifyAt', true))
+      let resultRealm  = await StudentController.filtered()
+      const {name,status} = values
+      if(name){
+        resultRealm = resultRealm?.filtered(`name CONTAINS '${name}'`)
+      }
+      if(status!==undefined && status!==null){
+        resultRealm = resultRealm?.filtered(`status == '${status}'`)
+      }
+      resultRealm = resultRealm?.sorted('modifyAt', true)
+      steRealmResults(resultRealm)
     } catch (e) {
       message.error('查询失败')
       console.log(e)
@@ -66,12 +70,16 @@ export default function App() {
     }
 
     try {
+      // await StudentController.delete(lesson.current._id)
+      // message.success('删除成功')
+      // setIsModalOpen(false)
+      // handleQuery().then(() => {
+      //   setIsModalOpen(false)
+      // })
+
       await StudentController.delete(lesson.current._id)
       message.success('删除成功')
       setIsModalOpen(false)
-      handleQuery().then(() => {
-        setIsModalOpen(false)
-      })
     } catch (e) {
       console.error(e)
       message.error('删除失败')
@@ -79,7 +87,7 @@ export default function App() {
   }
 
   return (
-    <>
+    <div style={{padding:"0 15px"}}>
       <Form
         name="basic"
         layout="inline"
@@ -110,7 +118,7 @@ export default function App() {
         </Form.Item>
       </Form>
       <Divider />
-      <Table rowKey="name" dataSource={dataSource}>
+      <Table rowKey="name" dataSource={dataSource} bordered>
         <Column title="姓名" dataIndex="name" key="name" align="center" />
         <Column title="费用" dataIndex="fee" key="fee" align="center" />
         <Column title="状态" dataIndex="status" key="status" align="center" />
@@ -126,6 +134,7 @@ export default function App() {
         <Column
           title="操作"
           dataIndex="status"
+
           key="action"
           align="center"
           render={(_: any, record: any) => {
@@ -155,6 +164,6 @@ export default function App() {
       >
         <p>此操作会一并删除该学生下的所有课程记录，确认继续？</p>
       </Modal>
-    </>
+    </div>
   )
 }

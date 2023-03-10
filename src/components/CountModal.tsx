@@ -1,14 +1,13 @@
 import { Formatter } from '@/Ycontants'
 import { Button, List, message, Modal } from 'antd'
 import dayjs from 'dayjs'
-import React, { useState, useEffect, useRef, LegacyRef, RefObject } from 'react'
+import React, { useState, useEffect, useRef, RefObject } from 'react'
 import * as mathjs from 'mathjs'
 const { chain } = mathjs
 import html2canvas from 'html2canvas'
 
 const CountModal: React.FC<{ dataSource: any }> = ({ dataSource }) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
-
   const countDom: RefObject<HTMLDivElement> | null = useRef(null)
   const save_url = useRef('')
   const aDom: RefObject<HTMLAnchorElement> | null = useRef(null)
@@ -63,7 +62,7 @@ const CountModal: React.FC<{ dataSource: any }> = ({ dataSource }) => {
                   <div style={footWrap}>
                     <span>{student['name']}</span>
                     <span>{date}</span>
-                    <span>{`${dayjs(startTime).format(Formatter.time)}-${dayjs(
+                    <span>{`${dayjs(startTime).format(Formatter.time)} - ${dayjs(
                       endTime
                     ).format(Formatter.time)}`}</span>
                   </div>
@@ -85,14 +84,14 @@ const footWrap: React.CSSProperties = {
 }
 
 const Footer: React.FC<{ data: any }> = ({ data }) => {
-  const [conutH, setCountH] = useState<number>(0)
-  const [conutF, setCountF] = useState<number>(0)
+  const [countH, setCountH] = useState<number>(0)
+  const [countF, setCountF] = useState<number>(0)
 
   useEffect(() => {
     let h = chain(0),
       f = chain(0)
 
-    data.forEach((val: any, key: string) => {
+    data.forEach((val: any) => {
       // console.log(val)
       h = h.add(val.duration)
       f = f.add(chain(val.duration).multiply(val.student.fee).done())
@@ -104,7 +103,7 @@ const Footer: React.FC<{ data: any }> = ({ data }) => {
 
   return (
     <div style={footWrap}>
-      <span>总时长：{conutH}h</span> <span>总费用：{conutF}元</span>
+      <span>总时长：{countH}h</span> <span>总费用：{countF}元</span>
     </div>
   )
 }

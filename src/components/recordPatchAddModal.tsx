@@ -17,9 +17,9 @@ import {
   message,
 } from 'antd'
 
-import { useSetRecoilState } from 'recoil'
-import { clendarKey } from '../state'
-import { v4 as uuidv4 } from 'uuid'
+// import { useSetRecoilState } from 'recoil'
+// import { clendarKey } from '../state'
+// import { v4 as uuidv4 } from 'uuid'
 
 const { RangePicker } = DatePicker
 
@@ -60,7 +60,7 @@ function RecordPatchAddModal() {
   const [confirmLoading, setConfirmLoading] = useState(false)
   const [form] = Form.useForm()
 
-  const setKey = useSetRecoilState(clendarKey)
+  // const setKey = useSetRecoilState(clendarKey)
 
   const [studentOptions, setStudentOptions] = useState<any[]>([])
 
@@ -92,7 +92,7 @@ function RecordPatchAddModal() {
       const fields = form.getFieldsValue()
 
       let days: Dayjs[] = []
-      const { daterange, frequency, name, tiemrange, duration } = fields
+      const { daterange, frequency, name, timerange, duration } = fields
       if (weekshow) {
         days = Utils.getAlldayByWeekInRange(
           daterange[0],
@@ -106,8 +106,8 @@ function RecordPatchAddModal() {
 
       const paramsModel = {
         student: studentOptions[index].object,
-        startTime: tiemrange[0],
-        endTime: tiemrange[1],
+        startTime: timerange[0],
+        endTime: timerange[1],
         duration: parseFloat(duration),
       }
 
@@ -121,7 +121,7 @@ function RecordPatchAddModal() {
       })
 
       await RecordController?.createPatch(params)
-      setKey(uuidv4())
+      // setKey(uuidv4())
       message.success('操作成功')
       setOpen(false)
     } catch (e) {
@@ -219,7 +219,7 @@ function RecordPatchAddModal() {
 
           <Form.Item
             label="时间"
-            name="tiemrange"
+            name="timerange"
             rules={[{ required: true, message: '请选择时间' }]}
           >
             <TimePicker.RangePicker
