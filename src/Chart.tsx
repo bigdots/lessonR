@@ -7,7 +7,6 @@ import { DateType, Formatter } from './Ycontants'
 import { LineOptions, Pieoption } from './components/ChatComponent'
 import ChartComponent from './components/ChatComponent'
 import dayjs, { Dayjs } from 'dayjs'
-
 const { RangePicker } = DatePicker
 const { chain } = mathjs
 
@@ -17,10 +16,13 @@ import {
   LineChartOutlined,
 } from '@ant-design/icons'
 
+const chartContainer: React.CSSProperties = {
+  width: '100%',
+  height: '260px',
+}
+
 function Chart() {
-  const [size, setSize] = useState<
-    'date' | 'month' | 'year' | 'quarter' | 'week' | 'time' | undefined
-  >('year')
+  const [size, setSize] = useState<any>('year')
 
   const [optionsList, setOptionsList] = useState<any[]>([])
 
@@ -31,7 +33,6 @@ function Chart() {
 
   const [recordsRealm,setRecordsRealm] = useState<any>()
 
-
   useEffect(()=>{
     RecordController.filtered(Utils.dateSearchJoin(date)).then((recordsRealm)=>{
       setRecordsRealm(recordsRealm)
@@ -39,80 +40,57 @@ function Chart() {
   },[date,size])
 
 
+  const countInRange = (timeRange:Dayjs[],collection:any)=>{
+    let hours = chain(0), fee = chain(0);
+    const records = collection.filtered(`startTime >= $0`,timeRange[0].toDate()).filtered(`endTime <= $0`,timeRange[1].toDate())
+    records.forEach((record:any)=>{
+      hours = hours.add(record.duration)
+      const f = chain(record.duration).multiply(record.student.fee).done()
+      fee = fee.add(f)
+    })
+    return {
+      hours:hours.done(),
+      fee:fee.done()
+    }
+  }
+
   useEffect(()=>{
     recordsRealm?.removeAllListeners()
 
-    recordsRealm?.addListener((list:any)=>{
+    recordsRealm?.addListener((collection:any)=>{
       // 构造图形
       console.log('构建图形')
-      // const dataMap:Map<string,number[]> = new Map()
-
-      // list.forEach((record:any)=>{
-      //
-      // })
-
-      let attended = [0, 0] //已上的;课时，费用
-      let unattended = [0, 0] //未上的
-
-      let lineYAxis1 = new Map() // 纵坐标，课时
-      let lineYAxis2 = new Map() // 纵坐标，fee
-
-      let lineXAxis = Utils.getAllDateInRange(date, size) // 横坐标，时间
-
-      lineXAxis.forEach((x) => {
-        //横坐标日期，纵坐标为0
-        lineYAxis1.set(x, 0)
-        lineYAxis2.set(x, 0)
+      //构建折线图坐标
+      const days = Utils.getAllDateInRange(date, size)
+      const hourMap:Map<string,number> = new Map()
+      const feeMap:Map<string,number> = new Map()
+      days.forEach((day:Dayjs)=>{
+        const start  = day.startOf(size)
+        const end = day.endOf(size)
+        const countFeeHours = countInRange([start,end],collection)
+        hourMap.set(day.format(Formatter[size as keyof typeof DateType]),countFeeHours.hours)
+        feeMap.set(day.format(Formatter[size as keyof typeof DateType]),countFeeHours.fee)
       })
 
-      list?.forEach((item: any, index: number) => {
-        const current = dayjs().startOf(DateType.day)
+      // 构建饼图
+      const attended = countInRange([date[0],dayjs().startOf(DateType.day)],collection)
+      const unattended = countInRange([dayjs().startOf(DateType.day),date[1]],collection)
+      const lineXAxis = Array.from(hourMap.keys())
 
-        const mapkey = dayjs(item.date).format(
-          Formatter[size as keyof typeof Formatter]
-        )
-
-
-        //计算折线图时长纵坐标
-        lineYAxis1.set(
-          mapkey,
-          chain(lineYAxis1.get(mapkey)).add(item.duration).done()
-        )
-
-        //计算折线图费用纵坐标
-        const fee = chain(item.duration).multiply(item.student.fee).done()
-        lineYAxis2.set(
-          mapkey,
-          chain(lineYAxis2.get(mapkey)).add(fee).done()
-        )
-
-        //计算饼图的已上，未上纵坐标
-        if (dayjs(item.date).isAfter(current)) {
-          // 未上
-          unattended[0] = chain(unattended[0]).add(item.duration).done()
-          const fee = chain(item.duration).multiply(item.student.fee).done()
-          unattended[1] = chain(unattended[1]).add(fee).done()
-        } else {
-          attended[0] = chain(attended[0]).add(item.duration).done()
-          const fee = chain(item.duration).multiply(item.student.fee).done()
-          attended[1] = chain(attended[1]).add(fee).done()
-        }
-      })
+      const countHour = chain(attended.hours).add(unattended.hours).done()
+      const countFee = chain(attended.fee).add(unattended.fee).done()
 
       setOptionsList([
-        new Pieoption(attended[0], unattended[0], 'hours', '{b}:{c}h'),
-        new LineOptions(lineXAxis, Array.from(lineYAxis1.values())),
-        new Pieoption(attended[1], unattended[1], 'fee', '{b}:{c}元'),
-        new LineOptions(lineXAxis, Array.from(lineYAxis2.values())),
+        new Pieoption(attended.hours, unattended.hours, `${countHour}h`, '{b}:{c}h'),
+        new LineOptions(lineXAxis, Array.from(hourMap.values())),
+        new Pieoption(attended.fee, unattended.fee, `￥${countFee}`, '{b}:{c}元'),
+        new LineOptions(lineXAxis, Array.from(feeMap.values())),
       ])
     })
 
   },[recordsRealm])
 
-  const style: React.CSSProperties = {
-    width: '100%',
-    height: '260px',
-  }
+
 
   const handleSizeChange = (e: RadioChangeEvent) => {
     console.log(e.target.value)
@@ -128,12 +106,12 @@ function Chart() {
 
   return (
     <div style={{ padding: '0 20px' }}>
-      <h1>
+      <div style={{marginBottom:'15px',fontWeight:600}}>
         <Space style={{ fontSize: '28px' }}>
           <LineChartOutlined />
           <span>数据统计</span>
         </Space>
-      </h1>
+      </div>
       <Space>
         <Radio.Group value={size} onChange={handleSizeChange}>
           <Radio.Button value={DateType.year}>年</Radio.Button>
@@ -154,12 +132,12 @@ function Chart() {
         </h2>
         <Row gutter={16}>
           <Col span={12}>
-            <div style={style}>
+            <div style={chartContainer}>
               <ChartComponent option={optionsList[0]} />
             </div>
           </Col>
           <Col span={12}>
-            <div style={style}>
+            <div style={chartContainer}>
               <ChartComponent option={optionsList[1]} />
             </div>
           </Col>
@@ -175,12 +153,12 @@ function Chart() {
         </h2>
         <Row gutter={16}>
           <Col span={12}>
-            <div style={style}>
+            <div style={chartContainer}>
               <ChartComponent option={optionsList[2]} />
             </div>
           </Col>
           <Col span={12}>
-            <div style={style}>
+            <div style={chartContainer}>
               <ChartComponent option={optionsList[3]} />
             </div>
           </Col>
