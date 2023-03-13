@@ -7,6 +7,11 @@
   directories: {
     output: 'release/${version}',
   },
+  publish:[{
+    provider: "github",
+    owner: "bigdots",
+    repo: "lessonR"
+  }],
   files: ['dist-electron', 'dist'],
   mac: {
     artifactName: '${productName}_${version}.${ext}',
@@ -17,9 +22,9 @@
       {
         target: 'nsis',
         arch: ['x64'],
-      },
+      }
     ],
-    requestedExecutionLevel: 'requireAdministrator',
+    requestedExecutionLevel: 'requireAdministrator', // 管理者权限
     artifactName: '${productName}_${version}.${ext}',
   },
   nsis: {

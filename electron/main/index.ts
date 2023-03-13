@@ -46,13 +46,7 @@ const preload = join(__dirname, '../preload/index.js')
 const url = process.env.VITE_DEV_SERVER_URL
 const indexHtml = join(process.env.DIST, 'index.html')
 
-// 每分钟检查一次更新
-if(process.env.VITE_DEV_SERVER_URL){
-  setInterval(()=>{
-    console.log('检查更新')
-    autoUpdater.checkForUpdates()
-  },60000)
-}
+
 
 async function createWindow() {
   win = new BrowserWindow({
@@ -89,7 +83,10 @@ async function createWindow() {
   })
 }
 
-app.whenReady().then(createWindow)
+app.whenReady().then(async ()=>{
+  await createWindow()
+  autoUpdater.checkForUpdatesAndNotify() // 检查更新
+})
 
 app.on('window-all-closed', () => {
   win = null
