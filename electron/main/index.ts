@@ -4,6 +4,9 @@ import { release } from 'node:os'
 const path = require('path')
 const fs = require('fs')
 const { join } = path
+import autoUpdater from './update' // 更新模块
+
+
 // The built directory structure
 //
 // ├─┬ dist-electron
@@ -11,6 +14,7 @@ const { join } = path
 // │ │ └── index.js    > Electron-Main
 // │ └─┬ preload
 // │   └── index.js    > Preload-Scripts
+// |   └── update.js   > Update-Scripts
 // ├─┬ dist
 // │ └── index.html    > Electron-Renderer
 //
@@ -41,6 +45,14 @@ let win: BrowserWindow | null = null
 const preload = join(__dirname, '../preload/index.js')
 const url = process.env.VITE_DEV_SERVER_URL
 const indexHtml = join(process.env.DIST, 'index.html')
+
+// 每分钟检查一次更新
+if(process.env.VITE_DEV_SERVER_URL){
+  setInterval(()=>{
+    console.log('检查更新')
+    autoUpdater.checkForUpdates()
+  },60000)
+}
 
 async function createWindow() {
   win = new BrowserWindow({
@@ -118,11 +130,11 @@ ipcMain.handle('open-win', (_, arg) => {
   }
 })
 
+//生成realm存储地址
 ipcMain.handle('get-path', (event, dbfilename) => {
   const dirPath = path.join(app.getPath('userData'), 'db')
   if (!fs.existsSync(dirPath)) {
     fs.mkdirSync(dirPath, { recursive: true })
   }
-  const dbPath = path.join(dirPath, dbfilename)
-  return dbPath
+  return path.join(dirPath, dbfilename)
 })
