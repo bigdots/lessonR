@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import {
   Button,
   Form,
@@ -12,17 +12,17 @@ import {
 
 import RecordAdd from '@/components/recordAddModal'
 import RecordController from '@/controller/record'
-import { Formatter, NICECOLORS } from '@/Ycontants'
+import {Formatter, NICECOLORS} from '@/Ycontants'
 import RecordAddModal from '@/components/recordAddModal'
-import { DeleteFilled, EditFilled } from '@ant-design/icons'
+import {DeleteFilled, EditFilled} from '@ant-design/icons'
 import dayjs from 'dayjs'
-import { ColumnsType } from 'antd/es/table'
+import {ColumnsType} from 'antd/es/table'
 import CountModal from './components/CountModal'
 
 interface DataType {
   _id: any
   startTime: Date
-  date: String
+  date: string
   endTime: Date
   duration: number
   student: any
@@ -41,12 +41,12 @@ const RecordPage: React.FC = () => {
   const [dataSource, setDataSource] = useState<any[]>([])
   const [isModalOpen, setIsModalOpen] = useState(false)
   const lesson: any = useRef(null)
-  const { RangePicker } = DatePicker
+  const {RangePicker} = DatePicker
   const [realmResults, steRealmResults] = useState<any>()
   const [form] = Form.useForm()
 
   useEffect(() => {
-    RecordController.filtered().then((realmResults)=>{
+    RecordController.select().then((realmResults) => {
       steRealmResults(realmResults)
     })
   }, [])
@@ -56,8 +56,8 @@ const RecordPage: React.FC = () => {
     try {
       setCurrent(1)  // 页码设为第一页
       const values = form.getFieldsValue()
-      const { dateRange, name } = values
-      let resultRealm = await RecordController.filtered()
+      const {dateRange, name} = values
+      let resultRealm = await RecordController.select()
       if (name) {
         resultRealm = resultRealm?.filtered(`student.name CONTAINS '${name}'`)
       }
@@ -128,7 +128,7 @@ const RecordPage: React.FC = () => {
         return (
           <Space size="middle">
             <RecordAddModal data={record}>
-              <EditFilled className={NICECOLORS} />
+              <EditFilled className={NICECOLORS}/>
             </RecordAddModal>
             <DeleteFilled
               className={NICECOLORS}
@@ -193,7 +193,7 @@ const RecordPage: React.FC = () => {
     }
 
     try {
-      await RecordController.delete(lesson.current._id)
+      await RecordController.delete([lesson.current._id])
       message.success('删除成功')
       // 更新日历
       setIsModalOpen(false)
@@ -255,23 +255,23 @@ const RecordPage: React.FC = () => {
   }, [realmResults, current, total, pageSize])
 
   return (
-    <div style={{padding:"0 15px"}}>
+    <div style={{padding: "0 15px"}}>
       <Form
         name="basic"
         layout="inline"
         form={form}
-        labelCol={{ span: 6 }}
-        wrapperCol={{ span: 18 }}
-        initialValues={{ remember: true }}
+        labelCol={{span: 6}}
+        wrapperCol={{span: 18}}
+        initialValues={{remember: true}}
         autoComplete="off"
       >
         <Space>
           <Form.Item label="姓名" name="name">
-            <Input />
+            <Input/>
           </Form.Item>
 
           <Form.Item label="日期" name="dateRange">
-            <RangePicker />
+            <RangePicker/>
           </Form.Item>
 
           <Form.Item>
@@ -281,7 +281,7 @@ const RecordPage: React.FC = () => {
           </Form.Item>
 
           <Form.Item>
-            <RecordAdd />
+            <RecordAdd/>
           </Form.Item>
         </Space>
       </Form>

@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import {
   Button,
   Form,
@@ -12,10 +12,11 @@ import {
 } from 'antd'
 import StudentAddModal from '@/components/studentAddModal'
 import StudentController from '@/controller/student'
-import { Formatter, NICECOLORS, selectOptions } from '@/Ycontants'
-import { DeleteFilled, EditFilled } from '@ant-design/icons'
+import {Formatter, NICECOLORS, selectOptions} from '@/Ycontants'
+import {DeleteFilled, EditFilled} from '@ant-design/icons'
 import dayjs from 'dayjs'
-const { Column } = Table
+
+const {Column} = Table
 
 export default function App() {
   const [dataSource, setDataSource] = useState<[]>([])
@@ -25,7 +26,7 @@ export default function App() {
   const [realmResults, steRealmResults] = useState<any>()
 
   useEffect(() => {
-    StudentController.filtered().then((res)=>{
+    StudentController.select().then((res) => {
       steRealmResults(res)
     })
   }, [])
@@ -43,12 +44,12 @@ export default function App() {
   const handleQuery = async () => {
     try {
       const values = form.getFieldsValue()
-      let resultRealm  = await StudentController.filtered()
-      const {name,status} = values
-      if(name){
+      let resultRealm = await StudentController.select()
+      const {name, status} = values
+      if (name) {
         resultRealm = resultRealm?.filtered(`name CONTAINS '${name}'`)
       }
-      if(status!==undefined && status!==null){
+      if (status !== undefined && status !== null) {
         resultRealm = resultRealm?.filtered(`status == '${status}'`)
       }
       resultRealm = resultRealm?.sorted('modifyAt', true)
@@ -77,7 +78,7 @@ export default function App() {
       //   setIsModalOpen(false)
       // })
 
-      await StudentController.delete(lesson.current._id)
+      await StudentController.delete([lesson.current._id])
       message.success('删除成功')
       setIsModalOpen(false)
     } catch (e) {
@@ -87,41 +88,41 @@ export default function App() {
   }
 
   return (
-    <div style={{padding:"0 15px"}}>
+    <div style={{padding: "0 15px"}}>
       <Form
         name="basic"
         layout="inline"
         form={form}
-        labelCol={{ span: 8 }}
-        wrapperCol={{ span: 16 }}
-        initialValues={{ remember: true }}
+        labelCol={{span: 8}}
+        wrapperCol={{span: 16}}
+        initialValues={{remember: true}}
         autoComplete="off"
       >
         <Form.Item label="姓名" name="name">
-          <Input />
+          <Input/>
         </Form.Item>
 
         <Form.Item label="状态" name="status">
-          <Select style={{ width: 120 }} options={selectOptions.status} />
+          <Select style={{width: 120}} options={selectOptions.status}/>
         </Form.Item>
 
-        <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+        <Form.Item wrapperCol={{offset: 8, span: 16}}>
           <Button type="primary" onClick={handleQuery}>
             查询
           </Button>
         </Form.Item>
 
-        <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
+        <Form.Item wrapperCol={{offset: 8, span: 16}}>
           <StudentAddModal>
             <Button type="primary">新增</Button>
           </StudentAddModal>
         </Form.Item>
       </Form>
-      <Divider />
+      <Divider/>
       <Table rowKey="name" dataSource={dataSource} bordered>
-        <Column title="姓名" dataIndex="name" key="name" align="center" />
-        <Column title="费用" dataIndex="fee" key="fee" align="center" />
-        <Column title="状态" dataIndex="status" key="status" align="center" />
+        <Column title="姓名" dataIndex="name" key="name" align="center"/>
+        <Column title="费用" dataIndex="fee" key="fee" align="center"/>
+        <Column title="状态" dataIndex="status" key="status" align="center"/>
         <Column
           title="创建时间"
           dataIndex="createdAt"
@@ -141,7 +142,7 @@ export default function App() {
             return (
               <Space size="middle">
                 <StudentAddModal data={record}>
-                  <EditFilled className={NICECOLORS} />
+                  <EditFilled className={NICECOLORS}/>
                 </StudentAddModal>
                 <DeleteFilled
                   className={NICECOLORS}

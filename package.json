@@ -12,6 +12,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build && electron-builder",
+    "release": "electron-builder",
     "preview": "vite preview",
     "pree2e": "vite build --mode=test",
     "e2e": "playwright test",
@@ -23,6 +24,8 @@
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.11",
     "@types/uuid": "^9.0.1",
+    "@typescript-eslint/eslint-plugin": "^5.57.0",
+    "@typescript-eslint/parser": "^5.57.0",
     "@vitejs/plugin-react": "^3.1.0",
     "antd": "^5.2.2",
     "dayjs": "^1.11.7",
@@ -30,6 +33,7 @@
     "electron": "^23.1.1",
     "electron-builder": "^23.6.0",
     "electron-icon-builder": "^2.0.1",
+    "eslint-plugin-react": "^7.32.2",
     "html2canvas": "^1.4.1",
     "lunisolar": "^2.1.12",
     "mathjs": "^11.6.0",
@@ -43,7 +47,8 @@
     "vite": "^4.1.4",
     "vite-electron-plugin": "^0.8.2",
     "vite-plugin-electron": "^0.11.1",
-    "vite-plugin-electron-renderer": "^0.12.1"
+    "vite-plugin-electron-renderer": "^0.12.1",
+    "eslint": "^8.36.0"
   },
   "engines": {
     "node": "^14.18.0 || >=16.0.0"

@@ -41,6 +41,7 @@ import log from './logger'
 // })
 
 
+
 autoUpdater.logger = log;
 
 autoUpdater.on('checking-for-update', () => {
@@ -48,6 +49,7 @@ autoUpdater.on('checking-for-update', () => {
 })
 autoUpdater.on('update-available', (info) => {
   log.info('Update available.');
+
 })
 autoUpdater.on('update-not-available', (info) => {
   log.info('Update not available.');

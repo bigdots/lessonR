@@ -1,11 +1,11 @@
-import { DeleteFilled, EditFilled, PlusSquareFilled } from '@ant-design/icons'
-import { message, Modal, Space, Timeline } from 'antd'
-import { useEffect, useRef, useState } from 'react'
+import {DeleteFilled, EditFilled, PlusSquareFilled} from '@ant-design/icons'
+import {message, Modal, Space, Timeline} from 'antd'
+import {useEffect, useRef, useState} from 'react'
 import RecordController from '../controller/record'
-import dayjs, { Dayjs } from 'dayjs'
+import dayjs, {Dayjs} from 'dayjs'
 import RecordAddModal from './recordAddModal'
-import { Formatter, ModalType, NICECOLORS } from '@/Ycontants'
-import { style } from 'typestyle'
+import {Formatter, ModalType, NICECOLORS} from '@/Ycontants'
+import {style} from 'typestyle'
 import lunisolar from 'lunisolar'
 
 
@@ -54,7 +54,7 @@ const taskItem = style({
   color: '#fff',
 })
 
-function LessonDaily({ date,data=[] }: { date: Dayjs,data:any }) {
+function LessonDaily({date, data = []}: { date: Dayjs, data: any }) {
   const lesson: any = useRef(null)
 
   const handleDel = (item: any) => {
@@ -68,7 +68,7 @@ function LessonDaily({ date,data=[] }: { date: Dayjs,data:any }) {
     }
 
     try {
-      await RecordController.delete(lesson.current._id)
+      await RecordController.delete([lesson.current._id])
       message.success('删除成功')
       setIsModalOpen(false)
     } catch (e) {
@@ -92,7 +92,7 @@ function LessonDaily({ date,data=[] }: { date: Dayjs,data:any }) {
           </Space>
 
           <RecordAddModal data={item}>
-            <EditFilled className={NICECOLORS} />
+            <EditFilled className={NICECOLORS}/>
           </RecordAddModal>
           <DeleteFilled
             className={NICECOLORS}
@@ -108,8 +108,8 @@ function LessonDaily({ date,data=[] }: { date: Dayjs,data:any }) {
   lis?.push({
     color: 'red',
     children: (
-      <RecordAddModal data={{date:date.format(Formatter.day)}}>
-        <PlusSquareFilled className={NICECOLORS} />
+      <RecordAddModal data={{date: date.format(Formatter.day)}}>
+        <PlusSquareFilled className={NICECOLORS}/>
       </RecordAddModal>
     ),
   })
@@ -131,7 +131,7 @@ function LessonDaily({ date,data=[] }: { date: Dayjs,data:any }) {
           )}`}</span>
         </div>
         <div className={line4}>
-          <Timeline items={lis} />
+          <Timeline items={lis}/>
         </div>
         <Modal
           title="警告"

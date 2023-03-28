@@ -1,20 +1,20 @@
-import React, { useState, useEffect, useRef } from 'react'
-import { Modal, Form, Select, Input, DatePicker, message } from 'antd'
+import React, {useState, useEffect, useRef} from 'react'
+import {Modal, Form, Select, Input, DatePicker, message} from 'antd'
 import RecordController from '../controller/record'
 import StudentController from '../controller/student'
-import { TimePicker } from 'antd'
-import dayjs, { Dayjs } from 'dayjs'
-import { RangeValue } from 'rc-picker/lib/interface'
-import { ModalType, STATUS } from '@/Ycontants'
+import {TimePicker} from 'antd'
+import dayjs, {Dayjs} from 'dayjs'
+import {RangeValue} from 'rc-picker/lib/interface'
+import {Formatter, ModalType, STATUS} from '@/Ycontants'
 import Utils from '../utils'
 
 function RecordAddModal(props: any) {
-  const { children } = props
+  const {children} = props
   const [open, setOpen] = useState(false)
   const [confirmLoading, setConfirmLoading] = useState(false)
   const [form] = Form.useForm()
 
-  let pageType = useRef(ModalType.add)
+  const pageType = useRef(ModalType.add)
 
   useEffect(() => {
     if (props.data && props.data._id) {
@@ -24,12 +24,12 @@ function RecordAddModal(props: any) {
 
   useEffect(() => {
     // console.log(props.data)
-    if(props.data && props.data.date){
-      form.setFieldValue('date',dayjs(props.data.date))
+    if (props.data && props.data.date) {
+      form.setFieldValue('date', dayjs(props.data.date))
     }
 
-    if(props.data && props.data._id){
-      const { student, startTime, endTime, duration } = props.data
+    if (props.data && props.data._id) {
+      const {student, startTime, endTime, duration} = props.data
       form.setFieldsValue({
         name: student?.name,
         // date: dayjs(date),
@@ -47,7 +47,9 @@ function RecordAddModal(props: any) {
   }
 
   useEffect(() => {
-    StudentController.filtered(`status=${STATUS.keep}`).then((result) => {
+    StudentController.select().then((res) => {
+      return res?.filtered(`status=${STATUS.keep}`)
+    }).then((result) => {
       const arr: any[] = []
       let index = 0
       result?.sorted('modifyAt', true).forEach((item: any) => {
@@ -56,41 +58,46 @@ function RecordAddModal(props: any) {
           value: item.name,
           object: item,
         })
-
         index++
       })
       setStudentOptions(arr)
     })
   }, [open])
 
-  const handleAdd = async (fields: any) => {
-    // 表单验证
-    const { name, date, timerange, duration } = fields
+  const _genParams = (fields: any) => {
+    const {name, date, timeRange, duration} = fields
     const index = Utils.findIndexByName(name, studentOptions)
-    return RecordController?.create({
+
+    const day = date.format(Formatter.day)
+
+    return {
       student: studentOptions[index].object,
-      date: date,
-      startTime: timerange[0],
-      endTime: timerange[1],
+      date: day,
+      startTime: dayjs(
+        `${day} ${timeRange[0].format(Formatter.time)}`
+      ).startOf('minute')
+        .toDate(),
+      endTime: dayjs(
+        `${day} ${timeRange[1].format(Formatter.time)}`
+      ).startOf('minute')
+        .toDate(),
       duration: parseFloat(duration),
-    })
+    }
+  }
+
+  const handleAdd = async (fields: any) => {
+    const params = _genParams(fields)
+    return RecordController?.insert([params])
   }
 
   const handleUpdate = async (fields: any) => {
-    // 表单验证
-    const { name, date, timerange, duration } = fields
 
-    const index = Utils.findIndexByName(name, studentOptions)
-    return RecordController?.create(
-      {
+    const params = _genParams(fields)
+    return RecordController?.update(
+      [{
         _id: props.data._id,
-        student: studentOptions[index].object,
-        date: date,
-        startTime: timerange[0],
-        endTime: timerange[1],
-        duration: parseFloat(duration),
-      },
-      'modified'
+        ...params
+      }]
     )
   }
 
@@ -143,30 +150,30 @@ function RecordAddModal(props: any) {
         <Form
           name="basic"
           form={form}
-          labelCol={{ span: 8 }}
-          wrapperCol={{ span: 14 }}
-          style={{ maxWidth: 600 }}
+          labelCol={{span: 8}}
+          wrapperCol={{span: 14}}
+          style={{maxWidth: 600}}
           autoComplete="off"
         >
           <Form.Item
             label="学生"
             name="name"
-            rules={[{ required: true, message: '请输入姓名' }]}
+            rules={[{required: true, message: '请输入姓名'}]}
           >
-            <Select style={{ width: 120 }} options={studentOptions} />
+            <Select style={{width: 120}} options={studentOptions}/>
           </Form.Item>
           <Form.Item
             label="日期"
             name="date"
-            rules={[{ required: true, message: '请选择上课日期' }]}
+            rules={[{required: true, message: '请选择上课日期'}]}
           >
-            <DatePicker />
+            <DatePicker/>
           </Form.Item>
 
           <Form.Item
             label="时间"
-            name="timerange"
-            rules={[{ required: true, message: '请选择上课时间' }]}
+            name="timeRange"
+            rules={[{required: true, message: '请选择上课时间'}]}
           >
             <TimePicker.RangePicker
               minuteStep={10}
@@ -176,7 +183,7 @@ function RecordAddModal(props: any) {
           </Form.Item>
 
           <Form.Item label="时长" name="duration">
-            <Input disabled={true} />
+            <Input disabled={true}/>
           </Form.Item>
         </Form>
       </Modal>

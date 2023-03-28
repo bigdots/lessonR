@@ -9,8 +9,10 @@
   },
   publish:[{
     provider: "github",
-    owner: "bigdots",
-    repo: "lessonR"
+    owner: "yuzhigang",
+    host: 'gitee.com',
+    repo: "lessonR",
+
   }],
   files: ['dist-electron', 'dist'],
   mac: {

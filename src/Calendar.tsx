@@ -1,10 +1,10 @@
 import React, {useEffect, useState} from 'react'
-import { Badge, Calendar, Space } from 'antd'
-import dayjs, { Dayjs } from 'dayjs'
+import {Badge, Calendar, Space} from 'antd'
+import dayjs, {Dayjs} from 'dayjs'
 import RecordPatchAddModal from './components/recordPatchAddModal'
 import RecordController from './controller/record'
 import LessonDaily from './components/lessonDaily'
-import { style } from 'typestyle'
+import {style} from 'typestyle'
 import {DateType, DAY, Formatter} from './Ycontants'
 import lunisolar from 'lunisolar'
 
@@ -26,7 +26,7 @@ const contentWeekend = style({
   color: '#F73131',
 })
 
-const dateFullCellRender = (date: Dayjs,recordsMap:any) => {
+const dateFullCellRender = (date: Dayjs, recordsMap: any) => {
   const isWeekend = date.day() === DAY.Sun || date.day() === DAY.Sat
   const lunisolarVal = lunisolar(date.toDate())
   const currentRecords = recordsMap.get(date.format(Formatter.day))
@@ -34,7 +34,7 @@ const dateFullCellRender = (date: Dayjs,recordsMap:any) => {
   return (
     <div className={isWeekend ? contentWeekend : content}>
       <span>{date.date()}</span>
-      <span style={{ color: 'black' }}>{lunisolarVal.format('lD')}</span>
+      <span style={{color: 'black'}}>{lunisolarVal.format('lD')}</span>
       {lunisolarVal.solarTerm?.toString() && (
         <span>{lunisolarVal.solarTerm?.toString()}</span>
       )}
@@ -42,7 +42,7 @@ const dateFullCellRender = (date: Dayjs,recordsMap:any) => {
         <Space>
           {currentRecords &&
             currentRecords.map((item: any) => {
-              return <Badge status="success" dot={true} key={item._id} />
+              return <Badge status="success" dot={true} key={item._id}/>
             })}
         </Space>
       </span>
@@ -50,52 +50,52 @@ const dateFullCellRender = (date: Dayjs,recordsMap:any) => {
   )
 }
 
-const App:React.FC = () => {
+const App: React.FC = () => {
   const [date, setDate] = useState(dayjs())
-  const [recordsMap,setRecordsMap] = useState(new Map())
-  const [recordsRealm, setRecordsRealm] = useState<any|undefined>()
+  const [recordsMap, setRecordsMap] = useState(new Map())
+  const [recordsRealm, setRecordsRealm] = useState<any | undefined>()
 
   useEffect(() => {
     // 查询课程数据
-    RecordController.filtered().then((recordsRealm)=>{
+    RecordController.select().then((recordsRealm) => {
       setRecordsRealm(recordsRealm)
     })
 
   }, [])
 
-  useEffect(()=>{
+  useEffect(() => {
     //  取本月+前后两个月，一共三月
-    const  start= date.startOf(DateType.month).subtract(15,DateType.day).format(Formatter.day)
-    const end = date.endOf(DateType.month).add(15,DateType.day).format(Formatter.day)
+    const start = date.startOf(DateType.month).subtract(15, DateType.day).format(Formatter.day)
+    const end = date.endOf(DateType.month).add(15, DateType.day).format(Formatter.day)
     //数据筛选排序
     const records = recordsRealm?.filtered('date > $0', start).filtered('date < $0', end).sorted('startTime')
 
     records?.removeAllListeners()
-    records?.addListener( (collection:any)=>{
+    records?.addListener((collection: any) => {
       // console.log('recordsRealmRef listener')
-      const recordsMap:Map<string,any> = new Map()
-      collection?.forEach((item:any)=>{
-        if(!recordsMap.has(item.date)){
-          recordsMap.set(item.date,[item])
-        }else{
+      const recordsMap: Map<string, any> = new Map()
+      collection?.forEach((item: any) => {
+        if (!recordsMap.has(item.date)) {
+          recordsMap.set(item.date, [item])
+        } else {
           recordsMap.get(item.date).push(item)
         }
       })
       // console.log(recordsMap)
       setRecordsMap(recordsMap)
     })
-  },[recordsRealm])
+  }, [recordsRealm])
 
   const onSelect = async (date: Dayjs) => {
     setDate(date)
   }
 
   const handlePanelChange = async (date: Dayjs, mode: string) => {
-    if(mode ===DateType.year ){
-        return;
+    if (mode === DateType.year) {
+      return;
     }
     // 查询课程数据
-    const recordsRealm = await RecordController.filtered()
+    const recordsRealm = await RecordController.select()
     // 修改查询realm
     setRecordsRealm(recordsRealm)
   }
@@ -118,8 +118,8 @@ const App:React.FC = () => {
   const render = () => {
     return (
       <>
-        <div style={{ position: 'absolute', top: '30px', left: '50px' }}>
-          <RecordPatchAddModal />
+        <div style={{position: 'absolute', top: '30px', left: '50px'}}>
+          <RecordPatchAddModal/>
         </div>
         <aside></aside>
         <section className={contentWrap}>
@@ -127,7 +127,7 @@ const App:React.FC = () => {
             <Calendar
               onSelect={onSelect}
               onPanelChange={handlePanelChange}
-              dateFullCellRender={(date) => dateFullCellRender(date,recordsMap)}
+              dateFullCellRender={(date) => dateFullCellRender(date, recordsMap)}
             />
           </div>
           <div>
@@ -141,4 +141,4 @@ const App:React.FC = () => {
 }
 
 
-export  default App
+export default App

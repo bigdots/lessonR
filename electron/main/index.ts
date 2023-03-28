@@ -1,9 +1,9 @@
-import { app, BrowserWindow, shell, ipcMain } from 'electron'
-import { release } from 'node:os'
+import {app, BrowserWindow, shell, ipcMain, dialog} from 'electron'
+import {release} from 'node:os'
 // import { join } from 'node:path'
 const path = require('path')
 const fs = require('fs')
-const { join } = path
+const {join} = path
 import autoUpdater from './update' // 更新模块
 
 
@@ -47,7 +47,6 @@ const url = process.env.VITE_DEV_SERVER_URL
 const indexHtml = join(process.env.DIST, 'index.html')
 
 
-
 async function createWindow() {
   win = new BrowserWindow({
     title: 'Main window',
@@ -77,15 +76,23 @@ async function createWindow() {
   })
 
   // Make all links open with the browser, not with the application
-  win.webContents.setWindowOpenHandler(({ url }) => {
+  win.webContents.setWindowOpenHandler(({url}) => {
     if (url.startsWith('https:')) shell.openExternal(url)
-    return { action: 'deny' }
+    return {action: 'deny'}
   })
 }
 
-app.whenReady().then(async ()=>{
+app.whenReady().then(async () => {
   await createWindow()
-  autoUpdater.checkForUpdatesAndNotify() // 检查更新
+  if (app.isPackaged) {
+    autoUpdater.checkForUpdatesAndNotify() // 检查更新
+  }
+  dialog.showMessageBox({
+    type: 'info',
+    buttons: ['Restart', 'Later'],
+    title: 'Application Update',
+    message: 'uodate'
+  })
 })
 
 app.on('window-all-closed', () => {
@@ -123,15 +130,16 @@ ipcMain.handle('open-win', (_, arg) => {
   if (process.env.VITE_DEV_SERVER_URL) {
     childWindow.loadURL(`${url}#${arg}`)
   } else {
-    childWindow.loadFile(indexHtml, { hash: arg })
+    childWindow.loadFile(indexHtml, {hash: arg})
   }
 })
 
 //生成realm存储地址
 ipcMain.handle('get-path', (event, dbfilename) => {
   const dirPath = path.join(app.getPath('userData'), 'db')
+  console.log('realmPath', dirPath)
   if (!fs.existsSync(dirPath)) {
-    fs.mkdirSync(dirPath, { recursive: true })
+    fs.mkdirSync(dirPath, {recursive: true})
   }
   return path.join(dirPath, dbfilename)
 })
