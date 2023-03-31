@@ -1,5 +1,5 @@
-import dayjs, { Dayjs } from 'dayjs'
-import { Formatter } from './Ycontants'
+import dayjs, {Dayjs} from 'dayjs'
+import {Formatter} from './Ycontants'
 
 class Utils {
   static getAlldayByWeekInRange(start: Dayjs, end: Dayjs, week: number) {
@@ -44,7 +44,7 @@ class Utils {
   }
 
   static dateSearchJoin(dateArray: Array<Dayjs>) {
-    let searchArr: Array<string> = []
+    const searchArr: Array<string> = []
     if (dateArray) {
       searchArr.push(`date <= '${dateArray[1].format(Formatter.day)}'`)
       searchArr.push(`'${dateArray[0].format(Formatter.day)}' <= date `)
@@ -70,7 +70,7 @@ class Utils {
   }
 
   static jionSearchParams(values: any) {
-    let searchArr: string[] = []
+    const searchArr: string[] = []
 
     Object.keys(values).forEach((key) => {
       if (values[key] === undefined || values[key] === '') {
@@ -94,6 +94,62 @@ class Utils {
 
     return str
   }
+
+  /**
+   *
+   * @param arr [] length 5
+   */
+  static genLessonArrInOneDay(records: any) {
+    const result = ['', '', '', '', '']
+    if (Array.isArray(records)) {
+      records.forEach((record: any) => {
+        const index = this._getLessonNameAndIndex(dayjs(record.startTime))
+        if (index !== undefined) {
+          result[index] = record.student.name
+        }
+      })
+    }
+
+
+    return result
+
+  }
+
+  /***
+   * 获取课程的索引和name
+   * @param startTime
+   * @return index 课程的位置索引
+   */
+  static _getLessonNameAndIndex(startTime: Dayjs) {
+    // ['8:00', '10:30', '13:30', '15:30', '16:00', '18:30']
+    const alignmentArray = [
+      startTime.hour(8).minute(0),
+      startTime.hour(10).minute(30),
+      startTime.hour(13).minute(30),
+      startTime.hour(16).minute(0),
+      startTime.hour(18).minute(30)
+    ]
+
+
+    let diff: undefined | number, index: undefined | number;
+    alignmentArray.forEach((item, i) => {
+      const newDiff = Math.abs(item.diff(startTime, 'm'))
+      if (diff === undefined) {
+        diff = newDiff
+        index = i
+        return;
+      }
+
+      if (newDiff < diff) {
+        diff = newDiff
+        index = i
+      }
+
+    })
+
+    return index
+  }
 }
+
 
 export default Utils

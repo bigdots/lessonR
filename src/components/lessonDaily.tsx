@@ -6,6 +6,7 @@ import dayjs, {Dayjs} from 'dayjs'
 import RecordAddModal from './recordAddModal'
 import {Formatter, ModalType, NICECOLORS} from '@/Ycontants'
 import {style} from 'typestyle'
+import React from "react";
 import lunisolar from 'lunisolar'
 
 

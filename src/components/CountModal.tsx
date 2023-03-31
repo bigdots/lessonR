@@ -1,12 +1,13 @@
-import { Formatter } from '@/Ycontants'
-import { Button, List, message, Modal } from 'antd'
+import {Formatter} from '@/Ycontants'
+import {Button, List, message, Modal} from 'antd'
 import dayjs from 'dayjs'
-import React, { useState, useEffect, useRef, RefObject } from 'react'
+import React, {useState, useEffect, useRef, RefObject} from 'react'
 import * as mathjs from 'mathjs'
-const { chain } = mathjs
+
+const {chain} = mathjs
 import html2canvas from 'html2canvas'
 
-const CountModal: React.FC<{ dataSource: any }> = ({ dataSource }) => {
+const CountModal: React.FC<{ dataSource: any }> = ({dataSource}) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const countDom: RefObject<HTMLDivElement> | null = useRef(null)
   const save_url = useRef('')
@@ -34,6 +35,7 @@ const CountModal: React.FC<{ dataSource: any }> = ({ dataSource }) => {
   const showModal = () => {
     setIsModalOpen(true)
   }
+  
 
   return (
     <>
@@ -52,11 +54,11 @@ const CountModal: React.FC<{ dataSource: any }> = ({ dataSource }) => {
           <List
             size="small"
             // header={<div>Header</div>}
-            footer={<Footer data={dataSource} />}
+            footer={<Footer data={dataSource}/>}
             bordered
             dataSource={dataSource}
             renderItem={(item: any) => {
-              const { student, date, startTime, endTime } = item[1]
+              const {student, date, startTime, endTime} = item[1]
               return (
                 <List.Item>
                   <div style={footWrap}>
@@ -83,7 +85,7 @@ const footWrap: React.CSSProperties = {
   justifyContent: 'space-between',
 }
 
-const Footer: React.FC<{ data: any }> = ({ data }) => {
+const Footer: React.FC<{ data: any }> = ({data}) => {
   const [countH, setCountH] = useState<number>(0)
   const [countF, setCountF] = useState<number>(0)
 

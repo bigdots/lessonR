@@ -1,4 +1,4 @@
-import { style } from 'typestyle'
+import {style} from 'typestyle'
 
 // import { Dayjs } from 'dayjs'
 
@@ -10,6 +10,24 @@ export enum DAY {
   Thu,
   Fri,
   Sat,
+}
+
+export const WEEK_MAP = {
+  1: '星期一',
+  2: '星期二',
+  3: '星期三',
+  4: '星期四',
+  5: '星期五',
+  6: '星期六',
+  0: '星期日',
+}
+
+export const TIME_LINE_MAP = {
+  4: '8:00-10:00',
+  5: '10:30-12:00',
+  6: '13:30-15:00',
+  7: '16:00-18:00',
+  8: '18:30-20:30',
 }
 
 export enum STATUS {

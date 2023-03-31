@@ -18,6 +18,7 @@ import {DeleteFilled, EditFilled} from '@ant-design/icons'
 import dayjs from 'dayjs'
 import {ColumnsType} from 'antd/es/table'
 import CountModal from './components/CountModal'
+import TableModal from "@/components/TableModal";
 
 interface DataType {
   _id: any
@@ -47,7 +48,7 @@ const RecordPage: React.FC = () => {
 
   useEffect(() => {
     RecordController.select().then((realmResults) => {
-      steRealmResults(realmResults)
+      steRealmResults(realmResults?.sorted('startTime'))
     })
   }, [])
 
@@ -285,10 +286,10 @@ const RecordPage: React.FC = () => {
           </Form.Item>
         </Space>
       </Form>
-      {/*<Divider />*/}
 
       <div style={calWrap}>
         <CountModal dataSource={selectedRowsMap.current}></CountModal>
+        <TableModal dataSource={selectedRowsMap.current}></TableModal>
       </div>
 
       <Table

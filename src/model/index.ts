@@ -1,16 +1,7 @@
-import { ipcRenderer } from 'electron'
+import {ipcRenderer} from 'electron'
 import Realm from 'realm'
 
 export class Student extends Realm.Object {
-  _id!: Realm.BSON.UUID
-  name!: string
-  status!: number
-  fee!: string
-  createdAt!: Date
-  modifyAt!: Date
-  records: Realm.List<Record> | null = null
-  isDelete: boolean = false
-
   static schema: Realm.ObjectSchema = {
     name: 'Student',
     properties: {
@@ -30,6 +21,14 @@ export class Student extends Realm.Object {
     },
     primaryKey: '_id',
   }
+  _id!: Realm.BSON.UUID
+  name!: string
+  status!: number
+  fee!: string
+  createdAt!: Date
+  modifyAt!: Date
+  records: Realm.List<Record> | null = null
+  isDelete = false
 
   static generate(data: object) {
     return Object.assign(data, {
@@ -40,16 +39,6 @@ export class Student extends Realm.Object {
 }
 
 export class Record extends Realm.Object {
-  _id!: Realm.BSON.UUID
-  date!: string
-  startTime!: Date
-  endTime!: Date
-  duration!: number
-  student: Realm.Object<Student> | null = null
-  createdAt!: Date
-  modifyAt!: Date
-  isDelete: boolean = false
-
   static schema: Realm.ObjectSchema = {
     name: 'Record',
     properties: {
@@ -65,6 +54,15 @@ export class Record extends Realm.Object {
     },
     primaryKey: '_id',
   }
+  _id!: Realm.BSON.UUID
+  date!: string
+  startTime!: Date
+  endTime!: Date
+  duration!: number
+  student: Realm.Object<Student> | null = null
+  createdAt!: Date
+  modifyAt!: Date
+  isDelete = false
 
   static generate(data: object) {
     return Object.assign(data, {

@@ -1,5 +1,5 @@
-import React, { Suspense, useEffect } from 'react'
-import { ConfigProvider, Tabs } from 'antd'
+import React, {Suspense, useEffect} from 'react'
+import {ConfigProvider, Tabs} from 'antd'
 import dayjs from 'dayjs'
 import 'dayjs/locale/zh-cn'
 import locale from 'antd/locale/zh_CN'
@@ -9,6 +9,7 @@ import advancedFormat from 'dayjs/plugin/advancedFormat'
 import WeekOfYear from 'dayjs/plugin/WeekOfYear'
 import quarterOfYear from 'dayjs/plugin/quarterOfYear'
 import minMax from 'dayjs/plugin/minMax'
+
 dayjs.extend(minMax)
 dayjs.extend(quarterOfYear)
 dayjs.extend(advancedFormat)
