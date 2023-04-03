@@ -12,6 +12,7 @@ export enum DAY {
   Sat,
 }
 
+
 export const WEEK_MAP = {
   1: '星期一',
   2: '星期二',
@@ -22,13 +23,8 @@ export const WEEK_MAP = {
   0: '星期日',
 }
 
-export const TIME_LINE_MAP = {
-  3: '8:00-10:00',
-  4: '10:30-12:00',
-  5: '13:30-15:00',
-  6: '16:00-18:00',
-  7: '18:30-20:30',
-}
+export const TIME_LINE_MAP = ['8:00-10:00', '10:30-12:00', '13:30-15:00', '16:00-18:00', '18:30-20:30',]
+
 
 export enum STATUS {
   stop,
@@ -94,4 +90,21 @@ export const selectOptions = {
       value: FREQUENCY.daily,
     },
   ],
+
+
 }
+
+export const COLORS = [
+  '#ffccc7',
+  '#ffd8bf',
+  '#ff9c6e',
+  '#ffe7ba',
+  '#fa8c16',
+  '#fff1b8',
+  '#d3f261',
+  '#b7eb8f',
+  '#b5f5ec',
+  '#13c2c2',
+  '#bae0ff',
+  '#85a5ff',
+  '#b37feb',]

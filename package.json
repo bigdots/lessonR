@@ -33,6 +33,7 @@
     "electron": "^23.1.1",
     "electron-builder": "^23.6.0",
     "electron-icon-builder": "^2.0.1",
+    "eslint": "^8.36.0",
     "eslint-plugin-react": "^7.32.2",
     "html2canvas": "^1.4.1",
     "lunisolar": "^2.1.12",
@@ -48,7 +49,8 @@
     "vite-electron-plugin": "^0.8.2",
     "vite-plugin-electron": "^0.11.1",
     "vite-plugin-electron-renderer": "^0.12.1",
-    "eslint": "^8.36.0"
+    "@emotion/react": "^11.10.6",
+    "@emotion/styled": "^11.10.6"
   },
   "engines": {
     "node": "^14.18.0 || >=16.0.0"

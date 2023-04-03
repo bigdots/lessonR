@@ -1,64 +1,63 @@
-import {Formatter, TIME_LINE_MAP, WEEK_MAP} from '@/Ycontants'
+import {COLORS, Formatter, TIME_LINE_MAP, WEEK_MAP} from '@/Ycontants'
 import {Button, List, message, Modal} from 'antd'
 import dayjs, {Dayjs} from 'dayjs'
 import React, {useState, useEffect, useRef, RefObject} from 'react'
 import * as mathjs from 'mathjs'
+import styled from '@emotion/styled'
 
-const {chain} = mathjs
 import html2canvas from 'html2canvas'
 import Utils from "@/utils";
 import lunisolar from 'lunisolar'
+import {jsx, css, Global, ClassNames} from '@emotion/react'
+
+const {chain} = mathjs
+
 
 const TableModal: React.FC<{ dataSource: any }> = ({dataSource}) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
-  const countDom: RefObject<HTMLDivElement> | null = useRef(null)
-  const save_url = useRef('')
-  const aDom: RefObject<HTMLAnchorElement> | null = useRef(null)
+  const colorMap = useRef<Map<string, string>>(new Map)
 
-  const handleOk = () => {
-    if (!countDom.current) {
-      return message.error('生成图片失败')
-    }
-
-    html2canvas(countDom.current).then(function (canvas) {
-      // 下载功能
-      save_url.current = canvas.toDataURL('image/png')
-      aDom.current && aDom.current.click()
-      setIsModalOpen(false)
-    })
-  }
-
-  const handleCancel = () => {
-    setIsModalOpen(false)
-  }
   const showModal = () => {
     setIsModalOpen(true)
   }
 
   const tableData = useRef<Array<string[]>>([])
+  const startDate = useRef<Dayjs | undefined>()
   useEffect(() => {
     let startDay: Dayjs | undefined;
     let endDay: Dayjs | undefined;
 
-
+    const usedColors: string[] = []
     dataSource.forEach((val: any, key: string) => {
+
+      if (!colorMap.current.has(val.student.name)) {
+        let color = COLORS[Math.floor(Math.random() * COLORS.length)]
+        while (usedColors.includes(color)) {
+          color = COLORS[Math.floor(Math.random() * COLORS.length)]
+        }
+        colorMap.current.set(val.student.name, color)
+      }
+
       const currentDay = dayjs(val.date)
       // console.log(890, !startDay, !endDay)
       if (!startDay || !endDay) {
         startDay = currentDay
         endDay = currentDay
-
       } else {
         if (startDay.isAfter(currentDay)) {
           startDay = currentDay
         }
-
         if (endDay.isBefore(currentDay)) {
           endDay = currentDay
         }
       }
     })
-    console.log(1123, startDay, endDay)
+
+    // console.log(cMap)
+
+    // setColorMap(cMap)
+
+    startDate.current = startDay
 
     if (!startDay || !endDay) {
       return
@@ -68,33 +67,16 @@ const TableModal: React.FC<{ dataSource: any }> = ({dataSource}) => {
     const endWeek = endDay.week() // 最后一天是第几周
     // 时间段是第一个索引值,日期是第二个索引值arr[][index]
     const result: Array<string[]> = []
-    // TIME_LINE_MAP
     //初始化数据
     const weekDiff = endWeek - startWeek
-    // i 是行，前三行是日期，星期和阴历
-    for (let i = 0; i < 8 * (weekDiff + 1); i++) {
-      // j是列,第一列是时间
+    // i 是行，前三行是日期，星期和阴历，五个时间点，所以是5行
+    for (let i = 0; i < 5 * (weekDiff + 1); i++) {
+      // j是列,第一列是时间，一周七天，所以是7列
       for (let j = 0; j < 7; j++) {
-        // 当前日期
-        const day = startDay.startOf('week').add(j + 7 * parseInt(`${i / 8}`), 'day')
         if (!result[i]) {
           result[i] = []
         }
-
-
-        if (i % 8 === 0) {
-          // 周几
-          result[i][j] = WEEK_MAP[day.day() as keyof typeof WEEK_MAP]
-        } else if (i % 8 === 1) {
-          // 日期
-          result[i][j] = day.format('MM-DD')
-        } else if (i % 8 === 2) {
-          // 阴历
-          result[i][j] = lunisolar(day.toDate()).format('lD')
-        } else {
-          result[i][j] = ''
-        }
-
+        result[i][j] = ''
       }
     }
 
@@ -107,94 +89,107 @@ const TableModal: React.FC<{ dataSource: any }> = ({dataSource}) => {
       const index2 = dayjs(val.date).subtract(1, 'day').day()
 
       if (index1 !== undefined) {
-        index1 = index1 + (curWeek - startWeek) * 8 + 3
+        index1 = index1 + (curWeek - startWeek) * 5
 
-        console.log(index1, index2)
+        // console.log(index1, index2)
         result[index1][index2] = val.student.name
       }
     })
-
-    console.log(result)
     tableData.current = result
-
   })
 
+  const TableContainer = styled.table`
+    width: 100%;
+    text-align: center;
 
+    &, td, th {
+      border: 1px solid #1a1a1a;
+      border-collapse: collapse;
+    }
+
+    td {
+      height: 20px;
+    }
+
+    th {
+      background-color: #bfbfbf;
+    }
+  `
+
+  const TdWraper = styled.td`
+    background-color: ${props => props.bgcolor};
+  `
   return (
     <>
       <Button type="primary" onClick={showModal}>
         表格
       </Button>
       <Modal
+        width='60%'
         title="课表"
+        footer={null}
         open={isModalOpen}
-        onOk={handleOk}
-        onCancel={handleCancel}
-        okText="导出为图片"
-        cancelText="关闭"
+        // onOk={handleOk}
+        onCancel={() => setIsModalOpen(false)}
       >
-        <div ref={countDom}>
-          {/*表头：日期，阳历，阳历，阴历*/}
+        <TableContainer>
+          <tbody>
+          {tableData.current.map((data, index) => {
+            // 当前周的开始日期 = 开始日期 + 周
+            const currentDay = startDate.current?.add(parseInt(`${index / 5}`), 'week')
+            // 每5条一周，一周开头前三行展示日期
+            const isWeekStart = index % 5 === 0
 
-          <table border={1}>
-            <tbody>
-            {tableData.current.map((data, index) => {
-              const line = index % 8
-              return (<>
-                <tr>
-                  {/*添加之间列*/}
-                  {line >= 3 && <td>{TIME_LINE_MAP[line as keyof typeof TIME_LINE_MAP]}</td>}
-                  {line === 0 && <td rowSpan={3}>时间/日期</td>}
-                  {data.map((item, i) => {
-                    return (
-                      <>
-                        <td>{item}</td>
-                      </>
-                    )
-                  })}
-                </tr>
-
-              </>)
-            })}
-            </tbody>
-          </table>
-        </div>
+            return (<>
+              <TableHead isShow={isWeekStart} day={currentDay}></TableHead>
+              <tr>
+                {/*添加第一列*/}
+                {<th>{TIME_LINE_MAP[index % 5]}</th>}
+                {data.map((item, i) => {
+                  let bgColor = colorMap.current.get(item)
+                  bgColor = bgColor ? bgColor : ''
+                  console.log(bgColor)
+                  return (
+                    <TdWraper bgcolor={bgColor}>{item}</TdWraper>
+                  )
+                })}
+              </tr>
+            </>)
+          })}
+          </tbody>
+        </TableContainer>
       </Modal>
-      <a ref={aDom} href={save_url.current} download="统计.png"></a>
     </>
   )
 }
 
 
-const footWrap: React.CSSProperties = {
-  width: '100%',
-  display: 'flex',
-  justifyContent: 'space-between',
+const TableHead: React.FC<{ isShow: boolean, day: Dayjs | undefined }> = ({isShow, day}) => {
+  if (isShow && day) {
+    return <>
+      <tr>
+        {/*添加第一列*/}
+        <th rowSpan={3}>时间/日期</th>
+        {new Array(7).fill('').map((item, index) => {
+          console.log(day?.add(index, 'day').format('MM-DD'))
+          return <th key={index}>{day?.add(index, 'day').format('MM-DD')}</th>
+        })}
+      </tr>
+      <tr>
+        {new Array(7).fill('').map((item, index) => {
+          return <th key={index}>{WEEK_MAP[day?.add(index, 'day').week() as keyof typeof WEEK_MAP]}</th>
+        })}
+      </tr>
+      <tr>
+        {new Array(7).fill('').map((item, index) => {
+          return <th key={index}> {lunisolar(day?.add(index, 'day').format(Formatter.day)).format('lD')}</th>
+        })}
+      </tr>
+    </>
+  } else {
+    return null
+  }
 }
 
-const Footer: React.FC<{ data: any }> = ({data}) => {
-  const [countH, setCountH] = useState<number>(0)
-  const [countF, setCountF] = useState<number>(0)
-
-  useEffect(() => {
-    let h = chain(0),
-      f = chain(0)
-
-    data.forEach((val: any) => {
-      // console.log(val)
-      h = h.add(val.duration)
-      f = f.add(chain(val.duration).multiply(val.student.fee).done())
-    })
-
-    setCountF(f.done())
-    setCountH(h.done())
-  }, [data])
-
-  return (
-    <div style={footWrap}>
-      <span>总时长：{countH}h</span> <span>总费用：{countF}元</span>
-    </div>
-  )
-}
 
 export default TableModal
