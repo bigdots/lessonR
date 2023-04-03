@@ -81,10 +81,7 @@ const TableModal: React.FC<{ dataSource: any }> = ({dataSource}) => {
           result[i] = []
         }
 
-        // if (j === 0) {
-        //   result[i][j] = TIME_LINE_MAP[j as keyof typeof TIME_LINE_MAP] ? TIME_LINE_MAP[j as keyof typeof TIME_LINE_MAP] : ''
-        //   break;
-        // }
+
         if (i % 8 === 0) {
           // 周几
           result[i][j] = WEEK_MAP[day.day() as keyof typeof WEEK_MAP]
@@ -111,10 +108,12 @@ const TableModal: React.FC<{ dataSource: any }> = ({dataSource}) => {
 
       if (index1 !== undefined) {
         index1 = index1 + (curWeek - startWeek) * 8 + 3
+
+        console.log(index1, index2)
         result[index1][index2] = val.student.name
       }
     })
-    //
+
     console.log(result)
     tableData.current = result
 
@@ -140,8 +139,12 @@ const TableModal: React.FC<{ dataSource: any }> = ({dataSource}) => {
           <table border={1}>
             <tbody>
             {tableData.current.map((data, index) => {
+              const line = index % 8
               return (<>
                 <tr>
+                  {/*添加之间列*/}
+                  {line >= 3 && <td>{TIME_LINE_MAP[line as keyof typeof TIME_LINE_MAP]}</td>}
+                  {line === 0 && <td rowSpan={3}>时间/日期</td>}
                   {data.map((item, i) => {
                     return (
                       <>
