@@ -87,12 +87,12 @@ app.whenReady().then(async () => {
   if (app.isPackaged) {
     autoUpdater.checkForUpdatesAndNotify() // 检查更新
   }
-  dialog.showMessageBox({
-    type: 'info',
-    buttons: ['Restart', 'Later'],
-    title: 'Application Update',
-    message: 'uodate'
-  })
+  // dialog.showMessageBox({
+  //   type: 'info',
+  //   buttons: ['Restart', 'Later'],
+  //   title: 'Application Update',
+  //   message: 'uodate'
+  // })
 })
 
 app.on('window-all-closed', () => {

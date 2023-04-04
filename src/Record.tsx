@@ -19,8 +19,6 @@ import dayjs from 'dayjs'
 import {ColumnsType} from 'antd/es/table'
 import CountModal from './components/CountModal'
 import TableModal from "@/components/TableModal";
-/** @jsx jsx */
-import {jsx, css} from '@emotion/react'
 
 
 interface DataType {
