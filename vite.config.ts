@@ -7,12 +7,13 @@ import {customStart, loadViteEnv} from 'vite-electron-plugin/plugin'
 import renderer from 'vite-plugin-electron-renderer'
 import pkg from './package.json'
 
+
 // https://vitejs.dev/config/
 export default defineConfig(({command}) => {
   rmSync('dist-electron', {recursive: true, force: true})
 
   const sourcemap = command === 'serve' || !!process.env.VSCODE_DEBUG
- 
+
   return {
     resolve: {
       alias: {
@@ -37,6 +38,7 @@ export default defineConfig(({command}) => {
               ),
             ]
             : []),
+
           // Allow use `import.meta.env.VITE_SOME_KEY` in Electron-Main
           loadViteEnv(),
         ],

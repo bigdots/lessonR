@@ -1,14 +1,11 @@
 import {COLORS, Formatter, TIME_LINE_MAP, WEEK_MAP} from '@/Ycontants'
-import {Button, List, message, Modal} from 'antd'
+import {Button, List, message, Modal, Empty} from 'antd'
 import dayjs, {Dayjs} from 'dayjs'
 import React, {useState, useEffect, useRef, RefObject} from 'react'
 import * as mathjs from 'mathjs'
 import styled from '@emotion/styled'
-
-import html2canvas from 'html2canvas'
 import Utils from "@/utils";
 import lunisolar from 'lunisolar'
-import {jsx, css, Global, ClassNames} from '@emotion/react'
 
 const {chain} = mathjs
 
@@ -24,10 +21,14 @@ const TableModal: React.FC<{ dataSource: any }> = ({dataSource}) => {
   const tableData = useRef<Array<string[]>>([])
   const startDate = useRef<Dayjs | undefined>()
   useEffect(() => {
+    if (dataSource.size <= 0) {
+      return;
+    }
+
     let startDay: Dayjs | undefined;
     let endDay: Dayjs | undefined;
 
-    const usedColors: string[] = []
+    const usedColors: string[] = []  // 使用过的颜色
     dataSource.forEach((val: any, key: string) => {
 
       if (!colorMap.current.has(val.student.name)) {
@@ -35,6 +36,7 @@ const TableModal: React.FC<{ dataSource: any }> = ({dataSource}) => {
         while (usedColors.includes(color)) {
           color = COLORS[Math.floor(Math.random() * COLORS.length)]
         }
+        usedColors.push(color)
         colorMap.current.set(val.student.name, color)
       }
 
@@ -52,10 +54,6 @@ const TableModal: React.FC<{ dataSource: any }> = ({dataSource}) => {
         }
       }
     })
-
-    // console.log(cMap)
-
-    // setColorMap(cMap)
 
     startDate.current = startDay
 
@@ -98,6 +96,7 @@ const TableModal: React.FC<{ dataSource: any }> = ({dataSource}) => {
     tableData.current = result
   })
 
+
   const TableContainer = styled.table`
     width: 100%;
     text-align: center;
@@ -116,8 +115,9 @@ const TableModal: React.FC<{ dataSource: any }> = ({dataSource}) => {
     }
   `
 
-  const TdWraper = styled.td`
-    background-color: ${props => props.bgcolor};
+
+  const TdWrapper = styled('td')<{ bgColor: string }>`
+    background-color: ${props => props['bgColor' as keyof typeof props]};
   `
   return (
     <>
@@ -132,7 +132,7 @@ const TableModal: React.FC<{ dataSource: any }> = ({dataSource}) => {
         // onOk={handleOk}
         onCancel={() => setIsModalOpen(false)}
       >
-        <TableContainer>
+        {dataSource.size > 0 && <TableContainer>
           <tbody>
           {tableData.current.map((data, index) => {
             // 当前周的开始日期 = 开始日期 + 周
@@ -148,16 +148,18 @@ const TableModal: React.FC<{ dataSource: any }> = ({dataSource}) => {
                 {data.map((item, i) => {
                   let bgColor = colorMap.current.get(item)
                   bgColor = bgColor ? bgColor : ''
-                  console.log(bgColor)
                   return (
-                    <TdWraper bgcolor={bgColor}>{item}</TdWraper>
+                    <TdWrapper key={i} bgColor={bgColor}>{item}</TdWrapper>
                   )
                 })}
               </tr>
             </>)
           })}
           </tbody>
-        </TableContainer>
+        </TableContainer>}
+
+        {dataSource.size <= 0 && <Empty/>}
+
       </Modal>
     </>
   )
@@ -171,7 +173,7 @@ const TableHead: React.FC<{ isShow: boolean, day: Dayjs | undefined }> = ({isSho
         {/*添加第一列*/}
         <th rowSpan={3}>时间/日期</th>
         {new Array(7).fill('').map((item, index) => {
-          console.log(day?.add(index, 'day').format('MM-DD'))
+          // console.log(day?.add(index, 'day').format('MM-DD'))
           return <th key={index}>{day?.add(index, 'day').format('MM-DD')}</th>
         })}
       </tr>

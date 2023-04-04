@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react'
+import react, {useEffect, useRef, useState} from 'react'
 import {
   Button,
   Form,
@@ -7,7 +7,7 @@ import {
   Space,
   Table,
   message,
-  Modal,
+  Modal, Row, Col,
 } from 'antd'
 
 import RecordAdd from '@/components/recordAddModal'
@@ -19,6 +19,9 @@ import dayjs from 'dayjs'
 import {ColumnsType} from 'antd/es/table'
 import CountModal from './components/CountModal'
 import TableModal from "@/components/TableModal";
+/** @jsx jsx */
+import {jsx, css} from '@emotion/react'
+
 
 interface DataType {
   _id: any
@@ -32,11 +35,6 @@ interface DataType {
   isDelete: boolean
 }
 
-const calWrap: React.CSSProperties = {
-  display: 'flex',
-  flexDirection: 'row-reverse',
-  padding: '10px 30px 10px 0',
-}
 
 const RecordPage: React.FC = () => {
   const [dataSource, setDataSource] = useState<any[]>([])
@@ -55,6 +53,7 @@ const RecordPage: React.FC = () => {
   // 查询
   const handleQuery = async () => {
     try {
+      resetSelected()
       setCurrent(1)  // 页码设为第一页
       const values = form.getFieldsValue()
       const {dateRange, name} = values
@@ -143,24 +142,30 @@ const RecordPage: React.FC = () => {
     },
   ]
 
+  const resetSelected = () => {
+    setSelectedRowKeys([])
+    selectedRowKeysSet.current = new Set<string>()
+    selectedRowsMap.current = new Map<string, DataType>()
+  }
+
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([])
-  const selectedRowKeysMap = useRef<Set<string>>(new Set())
+  const selectedRowKeysSet = useRef<Set<string>>(new Set())
   const selectedRowsMap = useRef<Map<string, DataType>>(new Map())
 
   const rowSelection = {
     selectedRowKeys,
     onChange: () => {
-      setSelectedRowKeys(Array.from(selectedRowKeysMap.current))
+      setSelectedRowKeys(Array.from(selectedRowKeysSet.current))
     },
     onSelect: (
       record: DataType,
       selected: boolean,
     ) => {
       if (selected) {
-        selectedRowKeysMap.current.add(record._id)
+        selectedRowKeysSet.current.add(record._id)
         selectedRowsMap.current.set(record._id, record)
       } else {
-        selectedRowKeysMap.current.delete(record._id)
+        selectedRowKeysSet.current.delete(record._id)
         selectedRowsMap.current.delete(record._id)
       }
     },
@@ -171,12 +176,12 @@ const RecordPage: React.FC = () => {
     ) => {
       if (selected) {
         changeRows.forEach((record) => {
-          selectedRowKeysMap.current.add(record._id)
+          selectedRowKeysSet.current.add(record._id)
           selectedRowsMap.current.set(record._id, record)
         })
       } else {
         changeRows.forEach((record) => {
-          selectedRowKeysMap.current.delete(record._id)
+          selectedRowKeysSet.current.delete(record._id)
           selectedRowsMap.current.delete(record._id)
         })
       }
@@ -274,23 +279,30 @@ const RecordPage: React.FC = () => {
           <Form.Item label="日期" name="dateRange">
             <RangePicker/>
           </Form.Item>
-
           <Form.Item>
             <Button type="primary" onClick={handleQuery}>
               查询
             </Button>
           </Form.Item>
-
           <Form.Item>
             <RecordAdd/>
           </Form.Item>
         </Space>
       </Form>
 
-      <div style={calWrap}>
-        <CountModal dataSource={selectedRowsMap.current}></CountModal>
-        <TableModal dataSource={selectedRowsMap.current}></TableModal>
-      </div>
+      <Row style={{margin: '15px 0'}}>
+        <Col span={6}>
+          <span style={{marginLeft: 8}}>
+          {selectedRowKeys.length > 0 ? `已选 ${selectedRowKeys.length} 条` : ''}
+          </span>
+        </Col>
+        <Col span={6} offset={12}>
+          <Space>
+            <CountModal dataSource={selectedRowsMap.current}></CountModal>
+            <TableModal dataSource={selectedRowsMap.current}></TableModal>
+          </Space>
+        </Col>
+      </Row>
 
       <Table
         columns={columns}
