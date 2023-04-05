@@ -1,6 +1,8 @@
-const { dialog } = require('electron')
-import { autoUpdater } from "electron-updater"
+const {dialog} = require('electron')
+import {autoUpdater} from "electron-updater"
 import log from './logger'
+
+
 //
 // const server = 'lesson-record-by-electron-lfsp9froe-bigdots.vercel.app'
 // const url = `${server}/update/${process.platform}/${app.getVersion()}`
@@ -41,7 +43,6 @@ import log from './logger'
 // })
 
 
-
 autoUpdater.logger = log;
 
 autoUpdater.on('checking-for-update', () => {
@@ -63,7 +64,7 @@ autoUpdater.on('download-progress', (progressObj) => {
 })
 autoUpdater.on('update-downloaded', (info) => {
   log.info('Update downloaded');
-  const { releaseNotes , releaseName} = info
+  const {releaseNotes, releaseName} = info
   const dialogOpts = {
     type: 'info',
     buttons: ['Restart', 'Later'],
@@ -83,5 +84,4 @@ autoUpdater.on('error', (err) => {
 })
 
 
-
-export default  autoUpdater
+export default autoUpdater
