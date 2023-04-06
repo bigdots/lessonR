@@ -1,13 +1,11 @@
-import {COLORS, Formatter, TIME_LINE_MAP, WEEK_MAP} from '@/Ycontants'
-import {Button, List, message, Modal, Empty} from 'antd'
+import {Formatter, TIME_LINE_MAP, WEEK_MAP} from '@/Ycontants'
+import {Button, Empty, Modal} from 'antd'
 import dayjs, {Dayjs} from 'dayjs'
-import React, {useState, useEffect, useRef, RefObject} from 'react'
-import * as mathjs from 'mathjs'
+import React, {useEffect, useRef, useState} from 'react'
 import styled from '@emotion/styled'
 import Utils from "@/utils";
 import lunisolar from 'lunisolar'
-
-const {chain} = mathjs
+import randomColor from 'randomcolor'
 
 
 const TableModal: React.FC<{ dataSource: any }> = ({dataSource}) => {
@@ -25,23 +23,83 @@ const TableModal: React.FC<{ dataSource: any }> = ({dataSource}) => {
       return;
     }
 
+    // let startDay: Dayjs | undefined;
+    // let endDay: Dayjs | undefined;
+    //
+    // const usedColors: string[] = []  // 使用过的颜色
+    // dataSource.forEach((val: any, key: string) => {
+    //   if (!colorMap.current.has(val.student.name)) {
+    //     let color = COLORS[Math.floor(Math.random() * COLORS.length)]
+    //     while (usedColors.includes(color)) {
+    //       color = COLORS[Math.floor(Math.random() * COLORS.length)]
+    //     }
+    //     usedColors.push(color)
+    //     colorMap.current.set(val.student.name, color)
+    //   }
+    //
+    //   const currentDay = dayjs(val.date)
+    //   // console.log(890, !startDay, !endDay)
+    //   if (!startDay || !endDay) {
+    //     startDay = currentDay
+    //     endDay = currentDay
+    //   } else {
+    //     if (startDay.isAfter(currentDay)) {
+    //       startDay = currentDay
+    //     }
+    //     if (endDay.isBefore(currentDay)) {
+    //       endDay = currentDay
+    //     }
+    //   }
+    // })
+
+    colorMap.current = assignColors(dataSource)
+
+    const {startDay, endDay} = findDateRange(dataSource)
+
+    startDate.current = startDay
+
+    if (!startDay || !endDay) {
+      return
+    }
+
+
+    tableData.current = generateTabularData(startDay, endDay, dataSource)
+  })
+
+  /**
+   * 生成颜色
+   * @param dataSource
+   * @return Map<studentName,color>
+   */
+  const assignColors = (dataSource: Map<string, any>) => {
+    const studentIdColorMap = new Map()
+    dataSource.forEach((val: any, key: string) => {
+      const id = val.student.name
+      if (!studentIdColorMap.has(id)) {
+        studentIdColorMap.set(id, '#fff')
+      }
+    })
+
+    const colorArr = randomColor({
+      luminosity: 'light',
+      count: studentIdColorMap.size
+    });
+
+    studentIdColorMap.forEach((val, key) => {
+      studentIdColorMap.set(key, colorArr.pop())
+    })
+    return studentIdColorMap
+  }
+
+  /**
+   * 确认日期区间
+   * @param dataSource
+   */
+  const findDateRange = (dataSource: Map<string, any>) => {
     let startDay: Dayjs | undefined;
     let endDay: Dayjs | undefined;
-
-    const usedColors: string[] = []  // 使用过的颜色
     dataSource.forEach((val: any, key: string) => {
-
-      if (!colorMap.current.has(val.student.name)) {
-        let color = COLORS[Math.floor(Math.random() * COLORS.length)]
-        while (usedColors.includes(color)) {
-          color = COLORS[Math.floor(Math.random() * COLORS.length)]
-        }
-        usedColors.push(color)
-        colorMap.current.set(val.student.name, color)
-      }
-
       const currentDay = dayjs(val.date)
-      // console.log(890, !startDay, !endDay)
       if (!startDay || !endDay) {
         startDay = currentDay
         endDay = currentDay
@@ -55,12 +113,19 @@ const TableModal: React.FC<{ dataSource: any }> = ({dataSource}) => {
       }
     })
 
-    startDate.current = startDay
-
-    if (!startDay || !endDay) {
-      return
+    return {
+      startDay,
+      endDay
     }
+  }
 
+  /**
+   * 生成表格数据
+   * @param startDay
+   * @param endDay
+   * @param dataSource
+   */
+  const generateTabularData = (startDay: Dayjs, endDay: Dayjs, dataSource: Map<string, any>) => {
     const startWeek = startDay.week() // 第一天是第几周
     const endWeek = endDay.week() // 最后一天是第几周
     // 时间段是第一个索引值,日期是第二个索引值arr[][index]
@@ -93,8 +158,9 @@ const TableModal: React.FC<{ dataSource: any }> = ({dataSource}) => {
         result[index1][index2] = val.student.name
       }
     })
-    tableData.current = result
-  })
+
+    return result
+  }
 
 
   const TableContainer = styled.table`

@@ -1,6 +1,6 @@
 {
   "name": "record",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "main": "dist-electron/main/index.js",
   "description": "an app for recording lessons.",
   "author": "yzg <897708192@qq.com>",
@@ -12,7 +12,7 @@
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build && electron-builder",
-    "release": "electron-builder --win -p always",
+    "release": "electron-builder -p onTag",
     "preview": "vite preview",
     "pree2e": "vite build --mode=test",
     "e2e": "playwright test",
@@ -40,6 +40,7 @@
     "html2canvas": "^1.4.1",
     "lunisolar": "^2.1.12",
     "mathjs": "^11.6.0",
+    "randomcolor": "^0.6.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "recoil": "^0.7.6",
