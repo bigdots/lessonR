@@ -1,4 +1,4 @@
-import {DeleteFilled, EditFilled, PlusSquareFilled} from '@ant-design/icons'
+import {DeleteFilled, EditFilled, PlusSquareFilled, ApiFilled} from '@ant-design/icons'
 import {message, Modal, Space, Timeline} from 'antd'
 import {useEffect, useRef, useState} from 'react'
 import RecordController from '../controller/record'
@@ -8,6 +8,7 @@ import {Formatter, ModalType, NICECOLORS} from '@/Ycontants'
 import {style} from 'typestyle'
 import React from "react";
 import lunisolar from 'lunisolar'
+import MigrationDailyLesson from "@/components/MigrationDailyLesson";
 
 
 const right = style({
@@ -112,6 +113,13 @@ function LessonDaily({date, data = []}: { date: Dayjs, data: any }) {
       <RecordAddModal data={{date: date.format(Formatter.day)}}>
         <PlusSquareFilled className={NICECOLORS}/>
       </RecordAddModal>
+    ),
+  }, {
+    color: 'red',
+    children: (
+      <MigrationDailyLesson date={date}>
+        <ApiFilled className={NICECOLORS}/>
+      </MigrationDailyLesson>
     ),
   })
 

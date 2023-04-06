@@ -14,15 +14,6 @@ class StudentController extends Controller {
     })
 
     return RecordController.delete(recordIds)
-
-
-    // return this.objectForPrimaryKey(_id).then((object: any) => {
-    //   // 删除该学生下所有课程
-    //   // object?.records?.forEach((record: any) => {
-    //   //   RecordController.delete(record._id)
-    //   // })
-    //   return super.delete([_id])
-    // })
   }
 }
 

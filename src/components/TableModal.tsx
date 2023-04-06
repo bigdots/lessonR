@@ -23,35 +23,6 @@ const TableModal: React.FC<{ dataSource: any }> = ({dataSource}) => {
       return;
     }
 
-    // let startDay: Dayjs | undefined;
-    // let endDay: Dayjs | undefined;
-    //
-    // const usedColors: string[] = []  // 使用过的颜色
-    // dataSource.forEach((val: any, key: string) => {
-    //   if (!colorMap.current.has(val.student.name)) {
-    //     let color = COLORS[Math.floor(Math.random() * COLORS.length)]
-    //     while (usedColors.includes(color)) {
-    //       color = COLORS[Math.floor(Math.random() * COLORS.length)]
-    //     }
-    //     usedColors.push(color)
-    //     colorMap.current.set(val.student.name, color)
-    //   }
-    //
-    //   const currentDay = dayjs(val.date)
-    //   // console.log(890, !startDay, !endDay)
-    //   if (!startDay || !endDay) {
-    //     startDay = currentDay
-    //     endDay = currentDay
-    //   } else {
-    //     if (startDay.isAfter(currentDay)) {
-    //       startDay = currentDay
-    //     }
-    //     if (endDay.isBefore(currentDay)) {
-    //       endDay = currentDay
-    //     }
-    //   }
-    // })
-
     colorMap.current = assignColors(dataSource)
 
     const {startDay, endDay} = findDateRange(dataSource)
@@ -154,7 +125,6 @@ const TableModal: React.FC<{ dataSource: any }> = ({dataSource}) => {
       if (index1 !== undefined) {
         index1 = index1 + (curWeek - startWeek) * 5
 
-        // console.log(index1, index2)
         result[index1][index2] = val.student.name
       }
     })
@@ -207,13 +177,13 @@ const TableModal: React.FC<{ dataSource: any }> = ({dataSource}) => {
             const isWeekStart = index % 5 === 0
 
             return (<>
-              <TableHead isShow={isWeekStart} day={currentDay}></TableHead>
-              <tr>
+              <TableHead isShow={isWeekStart} day={currentDay} key={`thead_${index}`}></TableHead>
+              <tr key={`tr_${index}`}>
                 {/*添加第一列*/}
                 {<th>{TIME_LINE_MAP[index % 5]}</th>}
                 {data.map((item, i) => {
                   let bgColor = colorMap.current.get(item)
-                  bgColor = bgColor ? bgColor : ''
+                  bgColor = bgColor ? bgColor : '#fff'
                   return (
                     <TdWrapper key={i} bgColor={bgColor}>{item}</TdWrapper>
                   )
@@ -223,9 +193,7 @@ const TableModal: React.FC<{ dataSource: any }> = ({dataSource}) => {
           })}
           </tbody>
         </TableContainer>}
-
         {dataSource.size <= 0 && <Empty/>}
-
       </Modal>
     </>
   )
@@ -239,13 +207,12 @@ const TableHead: React.FC<{ isShow: boolean, day: Dayjs | undefined }> = ({isSho
         {/*添加第一列*/}
         <th rowSpan={3}>时间/日期</th>
         {new Array(7).fill('').map((item, index) => {
-          // console.log(day?.add(index, 'day').format('MM-DD'))
           return <th key={index}>{day?.add(index, 'day').format('MM-DD')}</th>
         })}
       </tr>
       <tr>
         {new Array(7).fill('').map((item, index) => {
-          return <th key={index}>{WEEK_MAP[day?.add(index, 'day').week() as keyof typeof WEEK_MAP]}</th>
+          return <th key={index}>{WEEK_MAP[day?.add(index, 'day').day() as keyof typeof WEEK_MAP]}</th>
         })}
       </tr>
       <tr>
@@ -258,6 +225,5 @@ const TableHead: React.FC<{ isShow: boolean, day: Dayjs | undefined }> = ({isSho
     return null
   }
 }
-
 
 export default TableModal

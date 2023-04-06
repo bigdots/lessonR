@@ -6,18 +6,6 @@ import dayjs from 'dayjs'
 import {string} from "mathjs";
 
 class RecordController extends Controller {
-  // create(data: any, mode?: any): Promise<void> {
-  //   const newData = this._handleTime(data)
-  //
-  //   return super.create(newData, mode)
-  // }
-
-  // createPatch(datas: any[], mode?: any): Promise<void> {
-  //   const ndatas = datas.map((data) => {
-  //     return this._handleTime(data)
-  //   })
-  //   return super.createPatch(ndatas, mode)
-  // }
 
 
   // dateRange
@@ -65,33 +53,6 @@ class RecordController extends Controller {
     return super.delete(Array.from(ids) as any[])
   }
 
-
-  // private _handleTime(data: any) {
-  //   const newdata: any = {}
-  //   const {date, startTime, endTime} = data
-  //
-  //   if (date) {
-  //     newdata.date = data.date.format('YYYY/MM/DD')
-  //   }
-  //
-  //   if (startTime) {
-  //     newdata.startTime = dayjs(
-  //       `${date.format(Formatter.day)} ${startTime.format(Formatter.time)}`
-  //     )
-  //       .startOf('minute')
-  //       .toDate()
-  //   }
-  //
-  //   if (endTime) {
-  //     newdata.endTime = dayjs(
-  //       `${date.format(Formatter.day)} ${endTime.format(Formatter.time)}`
-  //     )
-  //       .startOf('minute')
-  //       .toDate()
-  //   }
-  //
-  //   return Object.assign(data, newdata)
-  // }
 }
 
 export default new RecordController(Record.schema)

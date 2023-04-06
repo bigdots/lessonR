@@ -15,35 +15,6 @@ export class Controller {
     })
   }
 
-  // objectForPrimaryKey(primaryKey: Realm.BSON.UUID) {
-  //   return this.realmPromise.then((realm: Realm | void) => {
-  //     return realm?.objectForPrimaryKey(this.schema?.name, primaryKey)
-  //   })
-  // }
-
-  // delete(_id: Realm.BSON.UUID): Promise<void> {
-  //   return this.create(
-  //     {
-  //       _id,
-  //       isDelete: true,
-  //     },
-  //     'modified'
-  //   )
-  // }
-
-  // deletePatch(datas: any[]): Promise<void> {
-  //   return this.realmPromise.then((realm: Realm | void) => {
-  //     realm?.write(() => {
-  //       datas.forEach((data) => {
-  //         realm.create(
-  //           this.schema?.name,
-  //           this._handleDefaultData(data),
-  //           Realm.UpdateMode.Modified
-  //         )
-  //       })
-  //     })
-  //   })
-  // }
 
   // 清除数据
   async clear() {
@@ -61,42 +32,6 @@ export class Controller {
     })
   }
 
-  // create(data: any, mode?: any): Promise<void> {
-  //   const schemaName = this.schema?.name
-  //
-  //   return this.realmPromise.then((realm: Realm | void) => {
-  //     realm?.write(() => {
-  //       if (mode) {
-  //         realm.create(schemaName, this._handleDefaultData(data, mode), mode)
-  //       } else {
-  //         realm.create(schemaName, this._handleDefaultData(data))
-  //       }
-  //     })
-  //   })
-  // }
-
-  // createPatch(datas: any[], mode?: any) {
-  //   // console.log(datas)
-  //   return this.realmPromise.then((realm: Realm | void) => {
-  //     realm?.write(() => {
-  //       datas.forEach((data) => {
-  //         mode
-  //           ? realm.create(
-  //             this.schema?.name,
-  //             this._handleDefaultData(data),
-  //             mode
-  //           )
-  //           : realm.create(this.schema?.name, this._handleDefaultData(data))
-  //       })
-  //     })
-  //   })
-  // }
-  //
-  // objects(): Promise<Realm.Results<Realm.Object<unknown, never>> | undefined> {
-  //   return this.realmPromise.then((realm: Realm | void) => {
-  //     return realm?.objects(this.schema?.name)
-  //   })
-  // }
 
   close() {
     return this.realmPromise.then((realm: Realm | void) => {
@@ -104,18 +39,6 @@ export class Controller {
     })
   }
 
-  // filtered(
-  //   paramsString?: string
-  // ): Promise<Realm.Results<Realm.Object<unknown, never>> | undefined> {
-  //   return this.objects().then((objects) => {
-  //     const res = objects?.filtered('isDelete == false')
-  //     if (paramsString) {
-  //       return res?.filtered(paramsString)
-  //     }
-  //     // 按照修改时间的先后顺序排列
-  //     return res
-  //   })
-  // }
 
   // 查询，不包含已经删除的
   select(): Promise<Realm.Results<Realm.Object<unknown, never>> | undefined> {
@@ -162,7 +85,8 @@ export class Controller {
           realm.create(this.schema?.name, data, Realm.UpdateMode.Modified)
         })
       })
-    }).catch(() => {
+    }).catch((e) => {
+      console.error(e)
       return Promise.reject('系统开小差了')
     })
   }
@@ -185,18 +109,4 @@ export class Controller {
     })
   }
 
-  // private _handleDefaultData(data: any, mode?: any) {
-  //   const defaultData = mode
-  //     ? {
-  //       modifyAt: new Date(), //修改日期
-  //     }
-  //     : {
-  //       _id: new UUID().toHexString(),
-  //       createdAt: new Date(),
-  //       modifyAt: new Date(), //修改日期
-  //       isDelete: false,
-  //     }
-  //
-  //   return Object.assign(data, defaultData)
-  // }
 }

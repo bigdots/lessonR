@@ -23,7 +23,7 @@ function RecordAddModal(props: any) {
   }, [props])
 
   useEffect(() => {
-    // console.log(props.data)
+
     if (props.data && props.data.date) {
       form.setFieldValue('date', dayjs(props.data.date))
     }
@@ -33,7 +33,7 @@ function RecordAddModal(props: any) {
       form.setFieldsValue({
         name: student?.name,
         // date: dayjs(date),
-        timerange: [dayjs(startTime), dayjs(endTime)],
+        timeRange: [dayjs(startTime), dayjs(endTime)],
         duration,
       })
     }
@@ -130,7 +130,6 @@ function RecordAddModal(props: any) {
 
   const handleTimeChange = (time: RangeValue<Dayjs>) => {
     if (time && time[0] && time[1]) {
-      // const duration = time[1].diff(time[0], 'h')
       const duration = time[1].diff(time[0], 'h', true).toFixed(1).toString()
       form.setFieldValue('duration', duration)
     }
