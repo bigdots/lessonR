@@ -16,7 +16,7 @@ const TableModal: React.FC<{ dataSource: any }> = ({dataSource}) => {
     setIsModalOpen(true)
   }
 
-  const tableData = useRef<Array<string[]>>([])
+  const tableData = useRef<Array<any[]>>([])
   const startDate = useRef<Dayjs | undefined>()
   useEffect(() => {
     if (dataSource.size <= 0) {
@@ -45,7 +45,7 @@ const TableModal: React.FC<{ dataSource: any }> = ({dataSource}) => {
   const assignColors = (dataSource: Map<string, any>) => {
     const studentIdColorMap = new Map()
     dataSource.forEach((val: any, key: string) => {
-      const id = val.student.name
+      const id = val.student._id
       if (!studentIdColorMap.has(id)) {
         studentIdColorMap.set(id, '#fff')
       }
@@ -125,7 +125,7 @@ const TableModal: React.FC<{ dataSource: any }> = ({dataSource}) => {
       if (index1 !== undefined) {
         index1 = index1 + (curWeek - startWeek) * 5
 
-        result[index1][index2] = val.student.name
+        result[index1][index2] = val
       }
     })
 
@@ -165,12 +165,11 @@ const TableModal: React.FC<{ dataSource: any }> = ({dataSource}) => {
         title="课表"
         footer={null}
         open={isModalOpen}
-        // onOk={handleOk}
         onCancel={() => setIsModalOpen(false)}
       >
         {dataSource.size > 0 && <TableContainer>
           <tbody>
-          {tableData.current.map((data, index) => {
+          {tableData.current.map((data: any[], index) => {
             // 当前周的开始日期 = 开始日期 + 周
             const currentDay = startDate.current?.add(parseInt(`${index / 5}`), 'week')
             // 每5条一周，一周开头前三行展示日期
@@ -182,10 +181,11 @@ const TableModal: React.FC<{ dataSource: any }> = ({dataSource}) => {
                 {/*添加第一列*/}
                 {<th>{TIME_LINE_MAP[index % 5]}</th>}
                 {data.map((item, i) => {
-                  let bgColor = colorMap.current.get(item)
+                  let bgColor = colorMap.current.get(item?.student?._id)
                   bgColor = bgColor ? bgColor : '#fff'
+                  const name = item ? item.student.name : '';
                   return (
-                    <TdWrapper key={i} bgColor={bgColor}>{item}</TdWrapper>
+                    <TdWrapper key={i} bgColor={bgColor}>{name}</TdWrapper>
                   )
                 })}
               </tr>
