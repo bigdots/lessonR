@@ -6,10 +6,12 @@ import locale from 'antd/locale/zh_CN'
 import RecordController from './controller/record'
 import StudentController from './controller/student'
 import advancedFormat from 'dayjs/plugin/advancedFormat'
+import dayOfYear from 'dayjs/plugin/dayOfYear'
 import WeekOfYear from 'dayjs/plugin/WeekOfYear'
 import quarterOfYear from 'dayjs/plugin/quarterOfYear'
 import minMax from 'dayjs/plugin/minMax'
 
+dayjs.extend(dayOfYear)
 dayjs.extend(minMax)
 dayjs.extend(quarterOfYear)
 dayjs.extend(advancedFormat)

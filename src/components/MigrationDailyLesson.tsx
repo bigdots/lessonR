@@ -1,13 +1,9 @@
-import React, {useState, useEffect, useRef} from 'react'
-import {Modal, Form, Select, Input, DatePicker, message} from 'antd'
+import React, {useState} from 'react'
+import {DatePicker, Form, message, Modal} from 'antd'
 import RecordController from '../controller/record'
-import StudentController from '../controller/student'
-import {TimePicker} from 'antd'
-import dayjs, {Dayjs} from 'dayjs'
-import {RangeValue} from 'rc-picker/lib/interface'
-import {Formatter, ModalType, STATUS} from '@/Ycontants'
-import Utils from '../utils'
-import {string} from "mathjs";
+import {Formatter} from '@/Ycontants'
+import dayjs from 'dayjs'
+
 
 function RecordAddModal(props: any) {
   const {children} = props
@@ -28,14 +24,24 @@ function RecordAddModal(props: any) {
 
       // 批量修改日期
       let res = await RecordController.select()
-      console.log(props.date.format(Formatter.day))
+      // console.log(props.date.format(Formatter.day))
       res = res?.filtered(`date == '${props.date.format(Formatter.day)}'`)
-      
+
       res = res?.slice(0, res?.length) as any
       const objs = res?.map((item: any, index) => {
+
+        const day = date.format(Formatter.day)
         return {
           _id: item._id,
-          date: date.format(Formatter.day)
+          date: day,
+          startTime: dayjs(
+            `${day} ${dayjs(item.startTime).format(Formatter.time)}`
+          ).startOf('minute')
+            .toDate(),
+          endTime: dayjs(
+            `${day} ${dayjs(item.endTime).format(Formatter.time)}`
+          ).startOf('minute')
+            .toDate(),
         }
       })
 

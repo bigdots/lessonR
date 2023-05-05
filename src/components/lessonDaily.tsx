@@ -1,12 +1,11 @@
-import {DeleteFilled, EditFilled, PlusSquareFilled, ApiFilled} from '@ant-design/icons'
-import {message, Modal, Space, Timeline} from 'antd'
-import {useEffect, useRef, useState} from 'react'
+import {ApiFilled, DeleteFilled, EditFilled, PlusSquareFilled} from '@ant-design/icons'
+import {message, Modal, Tooltip, Space, Timeline} from 'antd'
+import React, {useRef, useState} from 'react'
 import RecordController from '../controller/record'
 import dayjs, {Dayjs} from 'dayjs'
 import RecordAddModal from './recordAddModal'
-import {Formatter, ModalType, NICECOLORS} from '@/Ycontants'
+import {Formatter, NICECOLORS} from '@/Ycontants'
 import {style} from 'typestyle'
-import React from "react";
 import lunisolar from 'lunisolar'
 import MigrationDailyLesson from "@/components/MigrationDailyLesson";
 
@@ -47,7 +46,6 @@ const line3 = style({
 
 const line4 = style({
   textAlign: 'left',
-  // background: 'background: rgba(255, 255, 255, 0.15)',
   padding: '15px',
 })
 
@@ -57,20 +55,42 @@ const taskItem = style({
 })
 
 function LessonDaily({date, data = []}: { date: Dayjs, data: any }) {
-  const lesson: any = useRef(null)
+  // const lesson: any = useRef(null)
+
+  const delIds = useRef<any[]>([])
+
+  const isDelAll = useRef<boolean>(false)
 
   const handleDel = (item: any) => {
     setIsModalOpen(true)
-    lesson.current = item
+    // lesson.current = item
+
+    delIds.current = [item._id]
+
+    isDelAll.current = false
+  }
+
+  const handleDelAll = () => {
+    setIsModalOpen(true)
+    const ids = data.map((record: any) => {
+      return record._id
+    })
+    delIds.current = ids
+    isDelAll.current = true
   }
 
   const handleDelOK = async () => {
-    if (!lesson.current) {
-      return
+    // if (!lesson.current) {
+    //   return
+    // }
+
+    if (delIds.current.length <= 0) {
+      return;
     }
 
     try {
-      await RecordController.delete([lesson.current._id])
+      // await RecordController.delete([lesson.current._id])
+      await RecordController.delete(delIds.current)
       message.success('删除成功')
       setIsModalOpen(false)
     } catch (e) {
@@ -110,16 +130,28 @@ function LessonDaily({date, data = []}: { date: Dayjs, data: any }) {
   lis?.push({
     color: 'red',
     children: (
-      <RecordAddModal data={{date: date.format(Formatter.day)}}>
-        <PlusSquareFilled className={NICECOLORS}/>
-      </RecordAddModal>
-    ),
-  }, {
-    color: 'red',
-    children: (
-      <MigrationDailyLesson date={date}>
-        <ApiFilled className={NICECOLORS}/>
-      </MigrationDailyLesson>
+      <Space>
+        <RecordAddModal data={{date: date.format(Formatter.day)}}>
+          <Tooltip title="添加课程">
+            <PlusSquareFilled className={NICECOLORS}/>
+          </Tooltip>
+        </RecordAddModal>
+
+        <MigrationDailyLesson date={date}>
+          <Tooltip title="课程迁移">
+            <ApiFilled className={NICECOLORS}/>
+          </Tooltip>
+        </MigrationDailyLesson>
+
+        <Tooltip title="删除全部课程">
+          <DeleteFilled
+            className={NICECOLORS}
+            onClick={
+              handleDelAll
+            }
+          />
+        </Tooltip>
+      </Space>
     ),
   })
 
@@ -150,7 +182,7 @@ function LessonDaily({date, data = []}: { date: Dayjs, data: any }) {
             setIsModalOpen(false)
           }}
         >
-          <p>删除后不可恢复，确认删除此数据吗？</p>
+          <p>{isDelAll ? '删除后不可恢复，确认删除当天所有课程吗？' : '删除后不可恢复，确认删除此课程吗？'}</p>
         </Modal>
       </section>
     </>

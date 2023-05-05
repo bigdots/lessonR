@@ -1,33 +1,33 @@
 import {Formatter} from '@/Ycontants'
-import {Button, List, message, Modal} from 'antd'
+import {Button, List, Modal} from 'antd'
 import dayjs from 'dayjs'
 import React, {useState, useEffect, useRef, RefObject} from 'react'
 import * as mathjs from 'mathjs'
 
 const {chain} = mathjs
-import html2canvas from 'html2canvas'
+// import html2canvas from 'html2canvas'
 
 const CountModal: React.FC<{ dataSource: any }> = ({dataSource}) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const countDom: RefObject<HTMLDivElement> | null = useRef(null)
-  const save_url = useRef('')
-  const aDom: RefObject<HTMLAnchorElement> | null = useRef(null)
+  // const save_url = useRef('')
+  // const aDom: RefObject<HTMLAnchorElement> | null = useRef(null)
 
-  const handleOk = () => {
-    if (!countDom.current) {
-      message.error('生成图片失败')
-      return
-    }
-
-    html2canvas(countDom.current).then(function (canvas) {
-      // console.log(canvas)
-      // document.body.appendChild(canvas)
-      // 下载功能
-      save_url.current = canvas.toDataURL('image/png')
-      aDom.current && aDom.current.click()
-      setIsModalOpen(false)
-    })
-  }
+  // const handleOk = () => {
+  //   if (!countDom.current) {
+  //     message.error('生成图片失败')
+  //     return
+  //   }
+  //
+  //   html2canvas(countDom.current).then(function (canvas) {
+  //     // console.log(canvas)
+  //     // document.body.appendChild(canvas)
+  //     // 下载功能
+  //     save_url.current = canvas.toDataURL('image/png')
+  //     aDom.current && aDom.current.click()
+  //     setIsModalOpen(false)
+  //   })
+  // }
 
   const handleCancel = () => {
     setIsModalOpen(false)
@@ -35,7 +35,7 @@ const CountModal: React.FC<{ dataSource: any }> = ({dataSource}) => {
   const showModal = () => {
     setIsModalOpen(true)
   }
-  
+
 
   return (
     <>
@@ -45,10 +45,11 @@ const CountModal: React.FC<{ dataSource: any }> = ({dataSource}) => {
       <Modal
         title="统计"
         open={isModalOpen}
-        onOk={handleOk}
+        footer={null}
+        // onOk={handleOk}
         onCancel={handleCancel}
-        okText="导出为图片"
-        cancelText="关闭"
+        // okText="导出为图片"
+        // cancelText="关闭"
       >
         <div ref={countDom}>
           <List
@@ -74,7 +75,7 @@ const CountModal: React.FC<{ dataSource: any }> = ({dataSource}) => {
           />
         </div>
       </Modal>
-      <a ref={aDom} href={save_url.current} download="统计.png"></a>
+      {/*<a ref={aDom} href={save_url.current} download="统计.png"></a>*/}
     </>
   )
 }
@@ -101,7 +102,7 @@ const Footer: React.FC<{ data: any }> = ({data}) => {
 
     setCountF(f.done())
     setCountH(h.done())
-  }, [data])
+  })
 
   return (
     <div style={footWrap}>

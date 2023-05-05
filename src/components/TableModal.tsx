@@ -1,11 +1,13 @@
 import {Formatter, TIME_LINE_MAP, WEEK_MAP} from '@/Ycontants'
 import {Button, Empty, Modal} from 'antd'
 import dayjs, {Dayjs} from 'dayjs'
-import React, {useEffect, useRef, useState} from 'react'
+import React, {useEffect, useRef, useState, createRef} from 'react'
 import styled from '@emotion/styled'
 import Utils from "@/utils";
 import lunisolar from 'lunisolar'
 import randomColor from 'randomcolor'
+// import XLSX from "xlsx"
+import * as XLSX from 'xlsx';
 
 
 const TableModal: React.FC<{ dataSource: any }> = ({dataSource}) => {
@@ -84,6 +86,12 @@ const TableModal: React.FC<{ dataSource: any }> = ({dataSource}) => {
       }
     })
 
+    // 取开始日期当前周的第一天
+    startDay = startDay?.startOf('week')
+    // 取结束日期当前周的最后一天
+    endDay = endDay?.endOf('week')
+    console.log(startDay?.format(Formatter.day), endDay?.format(Formatter.day))
+
     return {
       startDay,
       endDay
@@ -155,6 +163,16 @@ const TableModal: React.FC<{ dataSource: any }> = ({dataSource}) => {
   const TdWrapper = styled('td')<{ bgColor: string }>`
     background-color: ${props => props['bgColor' as keyof typeof props]};
   `
+
+  const handleExportTable = () => {
+    const wb = XLSX.utils.table_to_book(tableRef.current);
+    /* Export to file (start a download) */
+    XLSX.writeFile(wb, "SheetJSTable.xlsx");
+    console.log(tableRef)
+  }
+
+  const tableRef = useRef()
+
   return (
     <>
       <Button type="primary" onClick={showModal}>
@@ -167,11 +185,13 @@ const TableModal: React.FC<{ dataSource: any }> = ({dataSource}) => {
         open={isModalOpen}
         onCancel={() => setIsModalOpen(false)}
       >
+        {/*<Button type='primary' onClick={handleExportTable}>导出</Button>*/}
         {dataSource.size > 0 && <TableContainer>
           <tbody>
           {tableData.current.map((data: any[], index) => {
             // 当前周的开始日期 = 开始日期 + 周
             const currentDay = startDate.current?.add(parseInt(`${index / 5}`), 'week')
+
             // 每5条一周，一周开头前三行展示日期
             const isWeekStart = index % 5 === 0
 

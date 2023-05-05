@@ -1,9 +1,5 @@
 import {Controller} from './controller'
-import Realm from 'realm'
 import {Record} from '../model'
-import {Formatter} from '../Ycontants'
-import dayjs from 'dayjs'
-import {string} from "mathjs";
 
 class RecordController extends Controller {
 

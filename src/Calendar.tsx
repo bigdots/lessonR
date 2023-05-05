@@ -69,10 +69,10 @@ const App: React.FC = () => {
     const end = date.endOf(DateType.month).add(15, DateType.day).format(Formatter.day)
     //数据筛选排序
     const records = recordsRealm?.filtered('date > $0', start).filtered('date < $0', end).sorted('startTime')
-
+    
     records?.removeAllListeners()
     records?.addListener((collection: any) => {
-      // console.log('recordsRealmRef listener')
+
       const recordsMap: Map<string, any> = new Map()
       collection?.forEach((item: any) => {
         if (!recordsMap.has(item.date)) {
@@ -81,7 +81,7 @@ const App: React.FC = () => {
           recordsMap.get(item.date).push(item)
         }
       })
-      // console.log(recordsMap)
+
       setRecordsMap(recordsMap)
     })
   }, [recordsRealm])

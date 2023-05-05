@@ -1,4 +1,4 @@
-import react, {useEffect, useRef, useState} from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import {
   Button,
   Form,
@@ -44,7 +44,7 @@ const RecordPage: React.FC = () => {
 
   useEffect(() => {
     RecordController.select().then((realmResults) => {
-      steRealmResults(realmResults?.sorted('startTime'))
+      steRealmResults(realmResults?.sorted('startTime', true))
     })
   }, [])
 
