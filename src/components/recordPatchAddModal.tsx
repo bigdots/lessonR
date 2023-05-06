@@ -1,11 +1,11 @@
 import React, {useState, useEffect} from 'react'
-import RecordController from '../controller/record'
-import Roles from '../controller/student'
+import RecordController from '@/controller/record'
+import Roles from '@/controller/student'
 import {TimePicker} from 'antd'
 import dayjs, {Dayjs} from 'dayjs'
 import {RangeValue} from 'rc-picker/lib/interface'
-import {Formatter, FREQUENCY, selectOptions} from '../Ycontants'
-import Utils from '../utils'
+import {Formatter, FREQUENCY, selectOptions} from '@/Ycontants'
+import Utils from '@/utils'
 import {
   Button,
   Modal,

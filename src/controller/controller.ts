@@ -32,7 +32,7 @@ export class Controller {
     })
   }
 
-
+  // 关闭数据库
   close() {
     return this.realmPromise.then((realm: Realm | void) => {
       realm?.close()
@@ -47,6 +47,7 @@ export class Controller {
     })
   }
 
+  // 根据id查询数据
   selectByPrimaryKey(primaryKey: Realm.BSON.UUID) {
     return this.realmPromise.then((realm: Realm | void) => {
       return realm?.objectForPrimaryKey(this.schema?.name, primaryKey)
@@ -65,18 +66,21 @@ export class Controller {
     return this.realmPromise.then((realm: Realm | void) => {
       realm?.write(() => {
         lists.forEach((data: any) => {
-          data._id = new UUID().toHexString(), //id
-            data.createdAt = new Date(), //创建日期
-            data.modifyAt = new Date(), //修改日期
-            data.isDelete = false, // 删除标记符
-            realm.create(this.schema?.name, data)
+          data._id = new UUID().toHexString(); //id
+          data.createdAt = new Date(); //创建日期
+          data.modifyAt = new Date(); //修改日期
+          data.isDelete = false;// 删除标记符
+          console.log(11, data);
+          realm.create(this.schema?.name, data)
         })
       })
-    }).catch(() => {
+    }).catch((e) => {
+      console.error(e)
       return Promise.reject('系统开小差了')
     })
   }
 
+  // 更新数据
   update(lists: any[]) {
     return this.realmPromise.then((realm: Realm | void) => {
       realm?.write(() => {
@@ -91,6 +95,7 @@ export class Controller {
     })
   }
 
+  // 删除数据，数据的delete字段设为true
   delete(lists: Realm.BSON.UUID[]) {
     return this.realmPromise.then((realm: Realm | void) => {
       realm?.write(() => {

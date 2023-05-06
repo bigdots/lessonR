@@ -8,7 +8,10 @@ import {
   Table,
   message,
   Modal, Row, Col,
+
 } from 'antd'
+
+import {DownloadOutlined} from '@ant-design/icons'
 
 import RecordAdd from '@/components/recordAddModal'
 import RecordController from '@/controller/record'
@@ -19,6 +22,8 @@ import dayjs from 'dayjs'
 import {ColumnsType} from 'antd/es/table'
 import CountModal from './components/CountModal'
 import TableModal from "@/components/TableModal";
+import XlsxInput from "@/components/XlsxInput";
+import styled from '@emotion/styled'
 
 
 interface DataType {
@@ -258,6 +263,18 @@ const RecordPage: React.FC = () => {
     })
   }, [realmResults, current, total, pageSize])
 
+  const DownLoadBtn = styled.div`
+    a:hover {
+      color: #fff;
+    }
+  `
+
+  const BtnsWrapper = styled.div`
+    display: flex;
+    justify-content: flex-end;
+  `
+
+
   return (
     <div style={{padding: "0 15px"}}>
       <Form
@@ -294,11 +311,21 @@ const RecordPage: React.FC = () => {
           {selectedRowKeys.length > 0 ? `已选 ${selectedRowKeys.length} 条` : ''}
           </span>
         </Col>
-        <Col span={6} offset={12}>
-          <Space>
-            <CountModal dataSource={selectedRowsMap.current}></CountModal>
-            <TableModal dataSource={selectedRowsMap.current}></TableModal>
-          </Space>
+        <Col span={14} offset={4}>
+          <BtnsWrapper>
+            <Space>
+              <CountModal dataSource={selectedRowsMap.current}></CountModal>
+              <TableModal dataSource={selectedRowsMap.current}></TableModal>
+              <XlsxInput></XlsxInput>
+              <DownLoadBtn>
+                <Button type='primary'>
+                  <DownloadOutlined/>
+                  <a href="/public/template.xlsx"
+                     download="模板.xlsx">下载表格模板</a>
+                </Button>
+              </DownLoadBtn>
+            </Space>
+          </BtnsWrapper>
         </Col>
       </Row>
 

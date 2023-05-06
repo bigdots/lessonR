@@ -23,7 +23,7 @@ export const WEEK_MAP = {
   0: '星期日',
 }
 
-export const TIME_LINE_MAP = ['8:00-10:00', '10:30-12:00', '13:30-15:00', '16:00-18:00', '18:30-20:30',]
+export const TIME_LINE_MAP = ['08:00-10:00', '10:30-12:30', '13:30-15:30', '16:00-18:00', '18:30-20:30']
 
 
 export enum STATUS {

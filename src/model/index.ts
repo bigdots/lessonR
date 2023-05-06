@@ -39,6 +39,7 @@ export class Student extends Realm.Object {
 }
 
 export class Record extends Realm.Object {
+  
   static schema: Realm.ObjectSchema = {
     name: 'Record',
     properties: {

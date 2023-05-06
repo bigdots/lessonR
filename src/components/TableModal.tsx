@@ -1,7 +1,7 @@
 import {Formatter, TIME_LINE_MAP, WEEK_MAP} from '@/Ycontants'
 import {Button, Empty, Modal} from 'antd'
 import dayjs, {Dayjs} from 'dayjs'
-import React, {useEffect, useRef, useState, createRef} from 'react'
+import React, {useEffect, useRef, useState} from 'react'
 import styled from '@emotion/styled'
 import Utils from "@/utils";
 import lunisolar from 'lunisolar'
@@ -194,18 +194,23 @@ const TableModal: React.FC<{ dataSource: any }> = ({dataSource}) => {
 
             // 每5条一周，一周开头前三行展示日期
             const isWeekStart = index % 5 === 0
+            const timeLineVal = TIME_LINE_MAP[index % 5]
 
             return (<>
               <TableHead isShow={isWeekStart} day={currentDay} key={`thead_${index}`}></TableHead>
               <tr key={`tr_${index}`}>
                 {/*添加第一列*/}
-                {<th>{TIME_LINE_MAP[index % 5]}</th>}
+                {<th>{timeLineVal}</th>}
                 {data.map((item, i) => {
                   let bgColor = colorMap.current.get(item?.student?._id)
                   bgColor = bgColor ? bgColor : '#fff'
-                  const name = item ? item.student.name : '';
+                  let content = ''
+                  if (item) {
+                    const timeRange = `${dayjs(item.startTime).format(Formatter.time)}-${dayjs(item.endTime).format(Formatter.time)}`
+                    content = timeRange === timeLineVal ? item.student.name : `${item.student.name}（${timeRange}）`
+                  }
                   return (
-                    <TdWrapper key={i} bgColor={bgColor}>{name}</TdWrapper>
+                    <TdWrapper key={i} bgColor={bgColor}>{content}</TdWrapper>
                   )
                 })}
               </tr>
