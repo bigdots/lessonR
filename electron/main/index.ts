@@ -1,10 +1,11 @@
 import {app, BrowserWindow, shell, ipcMain, dialog} from 'electron'
 import {release} from 'node:os'
+import log from './logger'
 // import { join } from 'node:path'
 const path = require('path')
 const fs = require('fs')
 const {join} = path
-import autoUpdater from './update' // 更新模块
+import autoUpdater from './update'
 
 
 // The built directory structure
@@ -45,6 +46,8 @@ let win: BrowserWindow | null = null
 const preload = join(__dirname, '../preload/index.js')
 const url = process.env.VITE_DEV_SERVER_URL
 const indexHtml = join(process.env.DIST, 'index.html')
+
+const templateXlsx = join(process.env.DIST, 'template.xlsx')
 
 
 async function createWindow() {
@@ -87,12 +90,6 @@ app.whenReady().then(async () => {
   if (app.isPackaged) {
     autoUpdater.checkForUpdatesAndNotify() // 检查更新
   }
-  // dialog.showMessageBox({
-  //   type: 'info',
-  //   buttons: ['Restart', 'Later'],
-  //   title: 'Application Update',
-  //   message: 'uodate'
-  // })
 })
 
 app.on('window-all-closed', () => {
@@ -137,9 +134,64 @@ ipcMain.handle('open-win', (_, arg) => {
 //生成realm存储地址
 ipcMain.handle('get-path', (event, dbfilename) => {
   const dirPath = path.join(app.getPath('userData'), 'db')
-  console.log('realmPath', dirPath)
+  log.info('realmPath', dirPath)
   if (!fs.existsSync(dirPath)) {
     fs.mkdirSync(dirPath, {recursive: true})
   }
   return path.join(dirPath, dbfilename)
+})
+
+//下载模板文件
+ipcMain.handle('download-template', (event, url) => {
+
+  dialog.showSaveDialog({
+    title: '保存文件',
+    buttonLabel: '保存',
+    defaultPath: path.resolve(app.getPath('downloads'), '模板.xlsx'),
+    filters: [{
+      name: 'xlsx',
+      extensions: ['xlsx']
+    }]
+  }).then(result => {
+    log.info('download url', url)
+
+    // 取消
+    if (result.canceled) {
+      return
+    }
+    if (process.env.VITE_DEV_SERVER_URL) {
+      // log.info('999', result)
+      win.webContents.downloadURL(url);
+      win.webContents.session.once('will-download', (event, item, webContents) => {
+        item.setSavePath(result.filePath);
+        item.once('done', (event, state) => {
+          if (state === 'completed') {
+            dialog.showMessageBox({
+              message: '保存成功',
+              type: 'info'
+            })
+          }
+        })
+      })
+    } else {
+      log.info('优化用流的方式读取文件', result.filePath)
+
+      const rs = fs.createReadStream(templateXlsx)
+      const ws = fs.createWriteStream(result.filePath)
+      // 直接解决背压问题
+      rs.pipe(ws).on('finish', () => {
+        dialog.showMessageBox({
+          message: '保存成功',
+          type: 'info'
+        })
+      });
+    }
+
+  }).catch(err => {
+    dialog.showMessageBox({
+      message: '保存失败',
+      type: 'error'
+    })
+    log.error(err)
+  })
 })

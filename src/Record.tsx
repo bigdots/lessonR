@@ -25,6 +25,14 @@ import TableModal from "@/components/TableModal";
 import XlsxInput from "@/components/XlsxInput";
 import styled from '@emotion/styled'
 
+// import templateExcel from '@/assets/template.xlsx'
+
+const templateExcel = new URL('/template.xlsx', import.meta.url).href
+
+console.log(templateExcel)
+
+import templateExcel2 from '@/assets/2.png'
+import {ipcRenderer} from "electron";
 
 interface DataType {
   _id: any
@@ -274,6 +282,11 @@ const RecordPage: React.FC = () => {
     justify-content: flex-end;
   `
 
+  const handleDownload = async () => {
+    const result = await ipcRenderer.invoke('download-template', templateExcel)
+    console.log(result)
+  }
+
 
   return (
     <div style={{padding: "0 15px"}}>
@@ -318,10 +331,11 @@ const RecordPage: React.FC = () => {
               <TableModal dataSource={selectedRowsMap.current}></TableModal>
               <XlsxInput></XlsxInput>
               <DownLoadBtn>
-                <Button type='primary'>
+                <Button type='primary' onClick={handleDownload}>
                   <DownloadOutlined/>
-                  <a href="/public/template.xlsx"
-                     download="模板.xlsx">下载表格模板</a>
+                  <span>下载表格模板</span>
+                  {/*<a href={templateExcel}*/}
+                  {/*   download="模板.xlsx"></a>*/}
                 </Button>
               </DownLoadBtn>
             </Space>

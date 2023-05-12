@@ -15,6 +15,7 @@ export default defineConfig(({command}) => {
   const sourcemap = command === 'serve' || !!process.env.VSCODE_DEBUG
 
   return {
+    assetsInclude: ['**/*.xlsx'],
     resolve: {
       alias: {
         '@': path.join(__dirname, 'src'),
