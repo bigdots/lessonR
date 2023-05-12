@@ -47,7 +47,7 @@ const preload = join(__dirname, '../preload/index.js')
 const url = process.env.VITE_DEV_SERVER_URL
 const indexHtml = join(process.env.DIST, 'index.html')
 
-const templateXlsx = join(process.env.DIST, 'template.xlsx')
+const templateXlsx = join(process.env.PUBLIC, 'template.xlsx')
 
 
 async function createWindow() {
@@ -142,7 +142,7 @@ ipcMain.handle('get-path', (event, dbfilename) => {
 })
 
 //下载模板文件
-ipcMain.handle('download-template', (event, url) => {
+ipcMain.handle('download-template', (event) => {
 
   dialog.showSaveDialog({
     title: '保存文件',
@@ -153,39 +153,21 @@ ipcMain.handle('download-template', (event, url) => {
       extensions: ['xlsx']
     }]
   }).then(result => {
-    log.info('download url', url)
-
     // 取消
     if (result.canceled) {
       return
     }
-    if (process.env.VITE_DEV_SERVER_URL) {
-      // log.info('999', result)
-      win.webContents.downloadURL(url);
-      win.webContents.session.once('will-download', (event, item, webContents) => {
-        item.setSavePath(result.filePath);
-        item.once('done', (event, state) => {
-          if (state === 'completed') {
-            dialog.showMessageBox({
-              message: '保存成功',
-              type: 'info'
-            })
-          }
-        })
-      })
-    } else {
-      log.info('优化用流的方式读取文件', result.filePath)
+    log.info('优化用流的方式读取文件', result.filePath)
 
-      const rs = fs.createReadStream(templateXlsx)
-      const ws = fs.createWriteStream(result.filePath)
-      // 直接解决背压问题
-      rs.pipe(ws).on('finish', () => {
-        dialog.showMessageBox({
-          message: '保存成功',
-          type: 'info'
-        })
-      });
-    }
+    const rs = fs.createReadStream(templateXlsx)
+    const ws = fs.createWriteStream(result.filePath)
+ 
+    rs.pipe(ws).on('finish', () => {
+      dialog.showMessageBox({
+        message: '保存成功',
+        type: 'info'
+      })
+    });
 
   }).catch(err => {
     dialog.showMessageBox({
