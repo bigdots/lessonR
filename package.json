@@ -1,6 +1,6 @@
 {
   "name": "record",
-  "version": "1.4.1",
+  "version": "1.5.0",
   "main": "dist-electron/main/index.js",
   "description": "an app for recording lessons.",
   "author": "yzg <897708192@qq.com>",
