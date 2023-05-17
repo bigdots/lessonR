@@ -184,7 +184,7 @@ ipcMain.handle('export-excel', (event, data, merges) => {
   dialog.showSaveDialog({
     title: '保存文件',
     buttonLabel: '保存',
-    defaultPath: path.resolve(app.getPath('downloads'), 'out.xlsx'),
+    defaultPath: path.resolve(app.getPath('downloads'), '课表.xlsx'),
     filters: [{
       name: 'xlsx',
       extensions: ['xlsx']
@@ -192,22 +192,22 @@ ipcMain.handle('export-excel', (event, data, merges) => {
   }).then(result => {
     // STEP 1: Create a new workbook
     const wb = XLSXS.utils.book_new();
-
     // STEP 3: Create worksheet with rows; Add worksheet to workbook
     const ws = XLSXS.utils.aoa_to_sheet(data);
 
     // s:开始位置, e:结束位置, r:行, c:列
     ws['!merges'] = merges
 
-    XLSXS.utils.book_append_sheet(wb, ws, "readme demo");
+
+    XLSXS.utils.book_append_sheet(wb, ws, "课程");
     XLSXS.writeFile(wb, result.filePath)
     dialog.showMessageBox({
-      message: '保存成功',
+      message: '导出成功',
       type: 'info'
     })
   }).catch((err) => {
     dialog.showMessageBox({
-      message: '保存失败',
+      message: '导出失败，请检查是否已经关闭文件',
       type: 'error'
     })
     log.error(err)
