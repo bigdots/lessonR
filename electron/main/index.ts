@@ -6,7 +6,7 @@ const path = require('path')
 const fs = require('fs')
 const {join} = path
 import autoUpdater from './update'
-
+import XLSXS from "xlsx-js-style";
 
 // The built directory structure
 //
@@ -161,7 +161,7 @@ ipcMain.handle('download-template', (event) => {
 
     const rs = fs.createReadStream(templateXlsx)
     const ws = fs.createWriteStream(result.filePath)
- 
+
     rs.pipe(ws).on('finish', () => {
       dialog.showMessageBox({
         message: '保存成功',
@@ -170,6 +170,42 @@ ipcMain.handle('download-template', (event) => {
     });
 
   }).catch(err => {
+    dialog.showMessageBox({
+      message: '保存失败',
+      type: 'error'
+    })
+    log.error(err)
+  })
+})
+
+
+//导出文件
+ipcMain.handle('export-excel', (event, data, merges) => {
+  dialog.showSaveDialog({
+    title: '保存文件',
+    buttonLabel: '保存',
+    defaultPath: path.resolve(app.getPath('downloads'), 'out.xlsx'),
+    filters: [{
+      name: 'xlsx',
+      extensions: ['xlsx']
+    }]
+  }).then(result => {
+    // STEP 1: Create a new workbook
+    const wb = XLSXS.utils.book_new();
+
+    // STEP 3: Create worksheet with rows; Add worksheet to workbook
+    const ws = XLSXS.utils.aoa_to_sheet(data);
+
+    // s:开始位置, e:结束位置, r:行, c:列
+    ws['!merges'] = merges
+
+    XLSXS.utils.book_append_sheet(wb, ws, "readme demo");
+    XLSXS.writeFile(wb, result.filePath)
+    dialog.showMessageBox({
+      message: '保存成功',
+      type: 'info'
+    })
+  }).catch((err) => {
     dialog.showMessageBox({
       message: '保存失败',
       type: 'error'

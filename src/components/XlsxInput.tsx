@@ -27,6 +27,10 @@ const XlsxInput: React.FC = () => {
       });
       const res: any[] = []
 
+      // console.log(data)
+      //
+      // return;
+
       const students = await StudentController.select()
 
       for (let r = 1; r <= data.length; r++) {
@@ -65,8 +69,9 @@ const XlsxInput: React.FC = () => {
             })
 
           } else {
+            // 不存在的学员之间跳过
             console.error(`学员${name}不存在`)
-            throw new Error('student not exist')
+            // throw new Error('student not exist')
           }
         }
       }
@@ -76,10 +81,10 @@ const XlsxInput: React.FC = () => {
         content: '数据导入成功！',
       });
     } catch (e: any) {
-      console.error(e)
-      const content = e.message === 'student not exist' ? '请确保已在系统中创建表格中的所有学员' : '读取文件失败，请检查excel格式是否正确'
+      // console.error(e)
+      // const content = e.message === 'student not exist' ? '请确保已在系统中创建表格中的所有学员' : '读取文件失败，请检查excel格式是否正确'
       warning({
-        content
+        content: '读取文件失败，请检查excel格式是否正确'
       });
     }
 

@@ -6,9 +6,7 @@ import styled from '@emotion/styled'
 import Utils from "@/utils";
 import lunisolar from 'lunisolar'
 import randomColor from 'randomcolor'
-// import XLSX from "xlsx"
-import * as XLSX from 'xlsx';
-
+import XlsxExport from '@/components/XlsxExport'
 
 const TableModal: React.FC<{ dataSource: any }> = ({dataSource}) => {
   const [isModalOpen, setIsModalOpen] = useState(false)
@@ -37,7 +35,7 @@ const TableModal: React.FC<{ dataSource: any }> = ({dataSource}) => {
 
 
     tableData.current = generateTabularData(startDay, endDay, dataSource)
-  })
+  }, [])
 
   /**
    * 生成颜色
@@ -137,6 +135,7 @@ const TableModal: React.FC<{ dataSource: any }> = ({dataSource}) => {
       }
     })
 
+
     return result
   }
 
@@ -164,14 +163,6 @@ const TableModal: React.FC<{ dataSource: any }> = ({dataSource}) => {
     background-color: ${props => props['bgColor' as keyof typeof props]};
   `
 
-  const handleExportTable = () => {
-    const wb = XLSX.utils.table_to_book(tableRef.current);
-    /* Export to file (start a download) */
-    XLSX.writeFile(wb, "SheetJSTable.xlsx");
-    console.log(tableRef)
-  }
-
-  const tableRef = useRef()
 
   return (
     <>
@@ -217,8 +208,10 @@ const TableModal: React.FC<{ dataSource: any }> = ({dataSource}) => {
             </>)
           })}
           </tbody>
+
         </TableContainer>}
         {dataSource.size <= 0 && <Empty/>}
+        <XlsxExport data={tableData.current} startDate={startDate.current} colorMap={colorMap.current}/>
       </Modal>
     </>
   )
